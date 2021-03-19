@@ -1,0 +1,30 @@
+{% extends 'adminlte/pages/edit.html' %}
+
+        
+{% block content %}
+    {% include "barra.html" %}
+
+        <h2>Prueba de plantillaaaa </h2>
+        <h4>Nombre: {{nombre_persona.upper}} - {{apellido_persona.upper}} y estamos en el año {{year}}</h4>
+        
+        {% if nombre_persona == 'Victor' %}
+            <p>La leyenda</p>
+        {% endif %}
+        
+        {% if True %}
+            <p><strong>Saludo del día: </strong>
+
+                <ul>
+                {% for i in temas %}
+
+                    <li>{{i|first|upper}}</li>
+
+                {% endfor %}
+                </ul>
+            </p>
+        {% else %}
+        <p>No se cumple la condición</p> 
+        {% endif %}
+
+{% endblock %}
+

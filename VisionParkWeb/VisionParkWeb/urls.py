@@ -15,7 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from VisionParkWeb.views import home, calculaEdad, hereda
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('home/', home),
+    path('edades/<int:edad>/<int:year>', calculaEdad),
+    path('hereda/', hereda)
 ]
