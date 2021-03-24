@@ -1,0 +1,38 @@
+{% extends 'adminlte/base.html' %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/static/drawerJs/dist/drawerJs.css"/>
+<style>
+    #canvas-editor {
+        margin-top: 50px;
+        margin-left: 50px;
+    }
+</style>
+{% endblock %}
+
+{% load i18n %}
+
+{% block title %}{% trans 'Setup' %}{% endblock %}
+
+{% block content %}
+
+<div id="canvas-editor"></div>
+        <script src="/static/drawerJs/dist/jquery-3.4.1.min.js"></script>
+        <script src="/static/drawerJs/dist/drawerJs.standalone.min.js"></script>
+        <script src="/static/drawerJs/drawerLocalization.js"></script>
+        <script src="/static/drawerJs/drawerJsConfig.js"></script>
+        <script>
+            $(document).ready(function () {
+                var drawer = new DrawerJs.Drawer(null, {
+                    texts: customLocalization,
+                    plugins: drawerPlugins,
+                    defaultImageUrl: '/images/drawer.jpg',
+                    defaultActivePlugin : { name : 'Polygon', mode : 'lastUsed'},
+                }, 600, 600);
+                $('#canvas-editor').append(drawer.getHtml());
+                drawer.onInsert();
+            });
+        </script>
+
+
+{% endblock %}

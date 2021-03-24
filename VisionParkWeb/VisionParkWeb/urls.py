@@ -14,12 +14,19 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from VisionParkWeb.views import home, calculaEdad, hereda
+from django.urls import path, include
+from VisionParkWeb.views import home, calculaEdad, hereda, setup, my_parkings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('home/', home),
+    path('', home, name='home'),
     path('edades/<int:edad>/<int:year>', calculaEdad),
-    path('hereda/', hereda)
+    path('hereda/', hereda),
+    path('manage/setup', setup),
+    path('manage/myparkings', my_parkings),
+]
+
+#Add Django site authentication urls (for login, logout, password management)
+urlpatterns += [
+    path('accounts/', include('django.contrib.auth.urls')),
 ]

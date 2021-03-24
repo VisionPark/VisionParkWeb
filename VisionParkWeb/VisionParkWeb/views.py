@@ -3,8 +3,13 @@ import datetime
 from django.template import Template, Context
 from django.template.loader import get_template
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 def home(request):
+
+    return render(request, 'home.html')
+
+def home2(request):
 
     nombre = "Victor"
     apellido = "RN"
@@ -42,10 +47,21 @@ def calculaEdad(request, edad, year):
     return HttpResponse(documento)
 
 
-
-
 def hereda(request):
 
     fecha = datetime.datetime.now()
 
     return render(request, 'hereda.html', {"dame_fecha": fecha})
+
+@login_required
+def setup(request):
+
+    return render(request, "manage/setup.html")
+
+@login_required   
+def my_parkings(request):
+
+    return render(request, "manage/myparkings.html")
+
+
+
