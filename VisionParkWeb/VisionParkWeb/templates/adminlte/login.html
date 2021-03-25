@@ -43,7 +43,7 @@ please login with an account that has access.</p>
 
                 
 
-                <p class="login-box-msg">Sign in to start your session</p>
+                <p class="login-box-msg">{% trans 'Sign in to start your session' %}</p>
                 {% block login_form %}
                     <form action="{% url 'login' %}" method="POST">
                         {% csrf_token %}
@@ -105,9 +105,9 @@ please login with an account that has access.</p>
                 -->
                 <!-- /.social-auth-links -->
                 {# Assumes you setup the password_reset view in your URLconf #}
-                <p><a href="{% url 'password_reset' %}">Lost password?</a></p>
+                <p><a href="{% url 'password_reset' %}">{% trans 'Lost password?' %}</a></p>
                 <p class="mb-0">
-                    <a href="register.html" class="text-center">Register a new membership</a>
+                    <a href="/signup" class="text-center">{% trans 'Register a new membership' %}</a>
                 </p>
 
             </div>
