@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls import url
 from VisionParkWeb.views import *
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,6 +27,7 @@ urlpatterns = [
     path('manage/setup', setup),
     path('manage/myparkings', my_parkings),
     path('about/', about),
+    url(r'^signup/$', signup, name='signup'),
 ]
 
 #Add Django site authentication urls (for login, logout, password management)

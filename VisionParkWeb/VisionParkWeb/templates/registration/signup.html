@@ -1,0 +1,88 @@
+{% extends "adminlte/base.html" %}
+{% load i18n %}
+{% block content %}
+
+  <div class="register-box" style="margin: auto;">
+    <div class="register-logo">
+      <a href="/"><b>Vision</b>Park</a>
+    </div>
+  
+    <div class="card">
+      <div class="card-body register-card-body">
+        <p class="login-box-msg">{% trans 'Register a new membership'%}</p>
+  
+        <form  method="post">
+            {% csrf_token %}
+          <div class="input-group mb-3">
+            <input type="text"name="username" maxlength="150" autofocus required id="id_username"
+             class="form-control" placeholder="{% trans 'Username' %}">
+            <div class="input-group-append">
+                <div class="input-group-text">
+                <span class="fas fa-user"></span>
+                </div>
+            </div>
+            </div>
+          <div class="input-group mb-3">
+            <input type="text" name="name" maxlength="100" required id="id_name"
+             class="form-control" placeholder="{% trans 'Full name' %}">
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-user"></span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <input type="email" name="email" maxlength="254" required id="id_email"
+             class="form-control" placeholder="Email">
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-envelope"></span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <input type="password" name="password1" autocomplete="new-password" required id="id_password1"
+             class="form-control" placeholder="{% trans 'Password'%}">
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+              </div>
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <input type="password" name="password2" autocomplete="new-password" required id="id_password2"
+             class="form-control" placeholder="{% trans 'Retype password' %}">
+            <div class="input-group-append">
+              <div class="input-group-text">
+                <span class="fas fa-lock"></span>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-8">
+              <div class="icheck-primary">
+                <input type="checkbox" id="agreeTerms" name="terms" value="agree">
+                <label for="agreeTerms">
+                 {% trans 'I agree to the '%}<a href="#">{% trans 'terms'%}</a>
+                </label>
+              </div>
+            </div>
+            <!-- /.col -->
+            <div class="col-4">
+              <button type="submit" class="btn btn-primary btn-block">{% trans 'Register' %}</button>
+            </div>
+            <!-- /.col -->
+          </div>
+        </form>
+  
+  
+        <a href="{% url 'login'%}" class="text-center">{% trans 'I already have a membership' %}</a>
+      </div>
+      <!-- /.form-box -->
+    </div><!-- /.card -->
+  </div>
+  <!-- /.register-box -->
+
+
+
+{% endblock %}
