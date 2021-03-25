@@ -1,10 +1,20 @@
 {% extends "adminlte/base.html" %}
+
 {% load i18n static %}
 
 {% block body_class %}login-page{% endblock %}
-
+{% block title %}Login{% endblock %}
 {% block body %}
-    <div class="login-box">
+{% if next %}
+{% if user.is_authenticated %}
+<p>Your account doesn't have access to this page. To proceed,
+please login with an account that has access.</p>
+{% else %}
+<p>Please login to see this page.</p>
+{% endif %}
+{% endif %}
+
+    <div class="login-box" style="margin: auto;" >
         {% block logo %}
         <div class="login-logo">
             {# Mirrors block names used in _main_header.html #}
@@ -31,14 +41,7 @@
                     {% endif %}
                 {% endblock login_errors %}
 
-                {% if next %}
-                {% if user.is_authenticated %}
-                <p>Your account doesn't have access to this page. To proceed,
-                please login with an account that has access.</p>
-                {% else %}
-                <p>Please login to see this page.</p>
-                {% endif %}
-                {% endif %}
+                
 
                 <p class="login-box-msg">Sign in to start your session</p>
                 {% block login_form %}
@@ -49,7 +52,7 @@
                         {% endif %}
                         <div class="input-group mb-3">
                             <td>{{ form.username.label_tag }}</td>
-                            <td>{{ form.username }}</td>
+                            <td>{{ form.username }} </td>
                           <div class="input-group-append">
                             <div class="input-group-text">
                               <span class="fas fa-user"></span>
