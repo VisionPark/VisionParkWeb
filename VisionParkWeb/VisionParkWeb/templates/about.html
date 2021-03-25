@@ -1,0 +1,75 @@
+{% extends 'adminlte/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans 'Home' %}{% endblock %}
+
+
+{% block content %} 
+<div class="col-9 d-flex align-items-stretch" style="margin: auto;">
+    <div class="card bg-light col-6" style="padding-top: 10px;">
+                    <div class="content" >
+                        <div class="author">
+                            
+                            <h4 class="title" style="text-align: center;">VisionPark<br/>
+                                <small>Concurso Universitario de Software Libre 2021</small>
+                            </h4>
+                            <hr>
+                            <div class="image" style="margin: auto;">
+                                <img style="max-width:100%;max-height:100%;" src="https://images.fineartamerica.com/images-medium-large-5/hong-kong-city-skyline-black-and-white-vector-illustration-jpldesigns.jpg">
+                            </div>
+                        </div>
+
+                        <p style="text-align:justify;" class="description text-center" > 
+                        <br><br>
+                        Free space detection system in parkings
+                        </p>
+                        
+                    </div>
+                    <hr>
+                    <div class="text-center">
+                        <a href="https://github.com/visionPark" target="blank" class="btn btn-simple" role="button"><i class="fab fa-lg fa-github"></i>Github</a>
+                        <a href="https://visionparkcusl.wordpress.com/"  target="blank" class="btn btn-simple"><i class="fab fa-lg fa-wordpress-simple"></i>Blog</a>
+                    </div>
+    </div>
+
+    <div class="card bg-light col-3" style="padding-top: 10px;" >
+      <div class="card-header border-bottom-0">
+        Developer
+      </div>
+      <div class="card-body" style="padding-top: 20%;">
+        <div >
+            <div class="text-center">
+                <img src="https://pbs.twimg.com/profile_images/1136595399937015808/_bChesvj_400x400.jpg" style="max-width: 150px; height: auto;" alt="" class="img-circle">
+              </div>
+        </div>
+        <br>
+        <div>
+          
+            <h2 class="lead" style="text-align: center;"><b>Víctor M. Rodríguez</b></h2>
+            <p class="text-muted text-sm" style="text-align: center;"><b>{% trans 'Computer Science Engineering Student'%}</b> </p>
+            <ul class="ml-4 mb-0 fa-ul text-muted">
+              <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> ETSI Universidad de Huelva</li>
+              <li class="small"><a href="https://github.com/visionPark" target="blank"><span class="fa-li"><i class="fas fa-lg fa-envelope"></i></span>victornarov@gmail.com</a></li>
+            </ul>
+          
+          
+        </div>
+      </div>
+      <hr>
+
+        <div class="text-center">
+            <a href="mailto:victornarov@gmail.com" class="btn btn-simple" target="blank"><i class="fas fa-lg fa-envelope"></i></a>
+            <a href="https://twitter.com/victornarov" class="btn btn-simple" target="blank"><i class="fab fa-lg fa-twitter"></i></a>
+            <a href="https://www.linkedin.com/in/victornarov/" class="btn btn-simple" target="blank"><i class="fab fa-lg fa-linkedin"></i></a>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+{% endblock %}
+
+
+    
