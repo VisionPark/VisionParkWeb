@@ -129,3 +129,5 @@ dmypy.json
 .pyre/
 
 secret_settings.py
+VisionParkWeb/VisionParkWeb/change_env.bat
+VisionParkWeb/change_env.bat
