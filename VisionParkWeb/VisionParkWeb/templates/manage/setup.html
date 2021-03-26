@@ -16,23 +16,88 @@
 
 {% block content %}
 
-<div id="canvas-editor"></div>
+<div id="canvas-editor" style="margin-right: auto;"></div>
         <script src="/static/drawerJs/dist/jquery-3.4.1.min.js"></script>
         <script src="/static/drawerJs/dist/drawerJs.standalone.min.js"></script>
         <script src="/static/drawerJs/drawerLocalization.js"></script>
         <script src="/static/drawerJs/drawerJsConfig.js"></script>
         <script>
+            function buildTable(canvasId, canvasData) {
+                //var canvasJson = JSON.stringify(canvasData);
+                console.log(canvasData);
+
+                var data = JSON.parse(canvasData)
+                var table = document.getElementById('myTable')
+                table.innerHTML = "";
+               
+
+                for (i in data.objects){
+
+                    var obj = data.objects[i];
+
+                    if(obj.type == "segmentablePolygon"){
+                        var row = "<tr>"
+                        
+                        //TODO: calculate precise offset to origin
+                        var centerX = parseFloat(obj.left);
+                        var centerY = parseFloat(obj.top);
+
+
+                        for(j in obj.points[0]){
+                           point = obj.points[0][j]
+                           x = parseFloat(point.x) + centerX
+                           y = parseFloat(point.y) + centerY
+
+                            row += "<td>("+x + " ; " + y+")</td>";
+
+                        }
+                        row += "</tr>"
+                        table.innerHTML += row
+                     }
+                    
+                }
+
+
+            }
+
             $(document).ready(function () {
                 var drawer = new DrawerJs.Drawer(null, {
                     texts: customLocalization,
                     plugins: drawerPlugins,
-                    defaultImageUrl: '/images/drawer.jpg',
+                    defaultImageUrl: '/static/drawerJS/play-button.png', // Click to start
                     defaultActivePlugin : { name : 'Polygon', mode : 'lastUsed'},
-                }, 600, 600);
+                    pluginsConfig: {
+                        BackgroundImage: {
+                            scaleDownLargeImage: true,
+                            imagePosition: 'stretch',
+                            dynamicRepositionImage: true,
+                            dynamicRepositionImageThrottle: 100,
+                            fixedBackgroundUrl: '/static/drawerJS/parking_sample.jpg',
+                        }
+                    },
+                    contentConfig: {
+                        saveCanvasData:buildTable
+                    }
+                }, $(document).width()*0.75, $(document).height()*0.75);
                 $('#canvas-editor').append(drawer.getHtml());
                 drawer.onInsert();
+                drawer.api.startEditing();
             });
-        </script>
+    </script>
 
+<div style="margin-top: 5%;">
+    <table class="table table-striped">
+        <tr  class="bg-info">
+            <th>V1</th>
+            <th>V2</th>
+            <th>V3</th>
+            <th>V4</th>
+        </tr>
+
+        <tbody id="myTable">
+            
+        </tbody>
+    </table>
+</div>
 
 {% endblock %}
