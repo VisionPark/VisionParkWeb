@@ -17,14 +17,18 @@
 {% block content %}
 
 <div id="canvas-editor" style="margin-right: auto;"></div>
+        
         <script src="/static/drawerJs/dist/jquery-3.4.1.min.js"></script>
-        <script src="/static/drawerJs/dist/drawerJs.standalone.min.js"></script>
+        <script src="/static/drawerJs/dist/drawerJs.standalone.js"></script>
         <script src="/static/drawerJs/drawerLocalization.js"></script>
         <script src="/static/drawerJs/drawerJsConfig.js"></script>
+        <p>
+            <button id="edit" onclick="Edit()">Toggle editing polygon</button>
+        </p>
         <script>
             function buildTable(canvasId, canvasData) {
                 //var canvasJson = JSON.stringify(canvasData);
-                console.log(canvasData);
+                //console.log(canvasData);
 
                 var data = JSON.parse(canvasData)
                 var table = document.getElementById('myTable')
@@ -41,12 +45,23 @@
                         //TODO: calculate precise offset to origin
                         var centerX = parseFloat(obj.left);
                         var centerY = parseFloat(obj.top);
+                        var scaleX = parseFloat(obj.scaleX);
+                        var scaleY = parseFloat(obj.scaleY);
+                        var sizeX = parseFloat(data.backgroundImage.width)
+                        var sizeY = parseFloat(data.backgroundImage.height)
 
 
                         for(j in obj.points[0]){
                            point = obj.points[0][j]
-                           x = parseFloat(point.x) + centerX
-                           y = parseFloat(point.y) + centerY
+
+                           if(j==0){
+                            centerX = centerX + -1 * point.x
+                            centerY = centerY + -1 * point.y
+                           }
+                           
+                            x = (parseFloat(point.x) + centerX)  / sizeX 
+                            y = (parseFloat(point.y) + centerY) / sizeY
+                           
 
                             row += "<td>("+x + " ; " + y+")</td>";
 
@@ -59,9 +74,9 @@
 
 
             }
-
+            var drawer = null;
             $(document).ready(function () {
-                var drawer = new DrawerJs.Drawer(null, {
+                    drawer = new DrawerJs.Drawer(null, {
                     texts: customLocalization,
                     plugins: drawerPlugins,
                     defaultImageUrl: '/static/drawerJS/play-button.png', // Click to start
@@ -76,13 +91,22 @@
                         }
                     },
                     contentConfig: {
-                        saveCanvasData:buildTable
-                    }
+                        saveCanvasData:buildTable,
+                        
+                    },
+
                 }, $(document).width()*0.75, $(document).height()*0.75);
                 $('#canvas-editor').append(drawer.getHtml());
+                
+            
                 drawer.onInsert();
                 drawer.api.startEditing();
+                
             });
+
+
+              
+
     </script>
 
 <div style="margin-top: 5%;">
