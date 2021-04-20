@@ -34,7 +34,7 @@
 
             function buildTable(canvasId, canvasData) {
                 //var canvasJson = JSON.stringify(canvasData);
-                //console.log(canvasData);
+                console.log(canvasData);
 
                 var data = JSON.parse(canvasData)
                 var table = document.getElementById('myTable')
@@ -47,14 +47,18 @@
 
                     if(obj.type == "segmentablePolygon"){
                         var row = "<tr>"
-                        
-                        //TODO: calculate precise offset to origin
+                
                         var centerX = parseFloat(obj.left); //Absolute position of upper left vertex
                         var centerY = parseFloat(obj.top);
                         var scaleX = parseFloat(obj.scaleX);
                         var scaleY = parseFloat(obj.scaleY);
                         var sizeX = parseFloat(data.backgroundImage.width);
                         var sizeY = parseFloat(data.backgroundImage.height);
+
+                        // Setting stroke
+                        // obj.stroke = "#1f497d",
+                        // obj.strokeWidth = 5,
+                        // obj.strokeDashArray = [8,8]
 
                         //console.log(centerX/sizeX*1280, centerY/sizeY*720)
 
@@ -78,7 +82,7 @@
                             x = (parseFloat(point.x) + centerX)  / sizeX * 1280
                             y = (parseFloat(point.y) + centerY) / sizeY  * 720                
 
-                            row += "<td>cx = "+ centerX + " cY = " + centerY + "["+x + " , " + y+"]</td>";
+                            row += "<td>["+x + " , " + y+"]</td>";
 
                         }
                         row += "</tr>"
@@ -88,14 +92,22 @@
                 }
             } //buildTable
 
-
+            var drawerPlugins = [
+                'BackgroundImage',
+                'Polygon',
+                'ShapeContextMenu',
+                'Zoom',
+                
+                ];
 
             $(document).ready(function () {
                     drawer = new DrawerJs.Drawer(null, {
                     texts: customLocalization,
+                    align: 'center',
                     plugins: drawerPlugins,
                     defaultImageUrl: '/static/drawerJS/play-button.png', // Click to start
                     defaultActivePlugin : { name : 'Polygon', mode : 'lastUsed'},
+                    activeColor: 'rgba(0, 255, 255, 0.55)',
                     pluginsConfig: {
                         BackgroundImage: {
                             scaleDownLargeImage: true,
@@ -103,6 +115,13 @@
                             dynamicRepositionImage: true,
                             dynamicRepositionImageThrottle: 100,
                             fixedBackgroundUrl: '/static/drawerJS/parking_sample.jpg',
+                        },
+                        ShapeBorder: {
+                            color: '#F3060A',
+                            defaultBorder:  'Dashed bold'
+                        },
+                        Color: {
+                            colors: []
                         }
                     },
                     contentConfig: {
@@ -153,10 +172,10 @@
 
     </script>
 
-<div style="margin-top: 5%;">
-    <p>
+<div class="col-9" style="margin-top: 3%; margin-left: auto; margin-right: auto;">
+    <!-- <p>
         <button id="saveCanvas" onclick="saveCanvas()">{% trans 'Save parking setup' %}</button>
-    </p>
+    </p> -->
     <table class="table table-striped">
         <tr  class="bg-info">
             <th>V1</th>
