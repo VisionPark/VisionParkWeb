@@ -10,6 +10,7 @@ class Parking(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=50)
     address = models.CharField(max_length=50)
+    postcode = models.CharField(max_length=10)
     lon = models.DecimalField(max_digits=9, decimal_places=6)
     lat = models.DecimalField(max_digits=9, decimal_places=6)
 
@@ -20,9 +21,9 @@ class Parking(models.Model):
 class Space(models.Model):
     parking = models.ForeignKey(Parking, on_delete=models.CASCADE)
     shortName = models.CharField(max_length=4)
-    vacant = models.BooleanField()
+    vacant = models.BooleanField(blank=True)
     since = models.DateTimeField()
     vertex = models.JSONField()
 
     def __str__(self):
-        return self.shortName + " - " + self.parking
+        return self.shortName + " - " + str(self.parking)
