@@ -5,6 +5,10 @@ from manageParking.models import Parking, Space
 
 class SpaceAdmin(admin.ModelAdmin):
     list_filter=("parking_id",)
+    readonly_fields = ('date_modified', 'date_created',)
 
-admin.site.register(Parking)
+class ParkingAdmin(admin.ModelAdmin):
+    readonly_fields = ('date_modified', 'date_created',)
+
+admin.site.register(Parking, ParkingAdmin)
 admin.site.register(Space, SpaceAdmin)

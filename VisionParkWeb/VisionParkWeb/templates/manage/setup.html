@@ -45,6 +45,7 @@
 
     <!-- Main content -->
     <section class="content">
+      <form action="/manage/setup" method="POST"> {% csrf_token %}
       <div class="row">
         <div class="col-md-12">
           <div class="card card-primary">
@@ -57,34 +58,48 @@
               </div>
             </div>
             <div class="card-body">
-              <div class="form-group">
-                <label for="inputName">{% trans 'Parking name' %}</label>
-                <input type="text" id="inParkingName" class="form-control">
+             
+              {% if form.errors %}
+              <div class="fieldWrapper">
+                <p><b>Errors</b></p>
+                {{form.errors}}
               </div>
-              <div class="form-group" style="display: table;">
-                <div style="display: table-cell;">
-                  <label for="inputDescription">{% trans 'Parking address' %}</label>
-                  <input type="text" id="inParkingAddress" class="form-control">
+              {% endif %}
+
+              
+                <div class="form-group">
+                  <label for="inputName">{% trans 'Parking name' %}</label>
+                  <input type="text" id="inParkingName" name="name" class="form-control">
                 </div>
-                <div style="display: table-cell; width: 20%; margin: auto;">
-                  <label for="inputDescription">{% trans 'PostCode' %}</label>
-                  <input type="number" id="inParkingPostCode" class="form-control">
+                <div class="form-group" style="display: table;">
+                  <div style="display: table-cell;">
+                    <label for="inputDescription">{% trans 'Parking address' %}</label>
+                    <input type="text" id="inParkingAddress" name="address" class="form-control">
+                  </div>
+                  <div style="display: table-cell; width: 20%; margin: auto;">
+                    <label for="inputDescription">{% trans 'PostCode' %}</label>
+                    <input type="number" id="inParkingPostCode" name="postcode" class="form-control">
+                  </div>
                 </div>
+                <div class="form-group" style="display: table;">
+                  <div style="display: table-cell;">
+                    <label for="inputDescription">{% trans 'Parking coordinates: lat' %}</label>
+                    <input type="number" id="inParkingLat" name="lat" step="any" class="form-control">
+                  </div>
+                  <div style="display: table-cell;">
+                    <label for="inputDescription">{% trans 'Parking coordinates: lng' %}</label>
+                    <input type="number" id="inParkingLng" name="lon" step="any" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div id="map">
+                    
+                  </div>
+                
               </div>
-              <div class="form-group" style="display: table;">
-                <div style="display: table-cell;">
-                  <label for="inputDescription">{% trans 'Parking coordinates: lat' %}</label>
-                  <input type="number" disabled="disabled" id="inParkingLat" class="form-control">
-                </div>
-                <div style="display: table-cell;">
-                  <label for="inputDescription">{% trans 'Parking coordinates: lng' %}</label>
-                  <input type="number" disabled="disabled" id="inParkingLng" class="form-control">
-                </div>
-              </div>
-              <div class="form-group">
-                <div id="map">
-                  
-                </div>
+
+              <div class="col-12">
+                <input type="submit" value="{% trans 'Create a new parking' %}" class="btn btn-success float-right">
               </div>
 
             </div>
@@ -94,11 +109,9 @@
         </div>
       
       </div>
-      <div class="row">
-        <div class="col-12">
-          <input type="submit" value="{% trans 'Create a new parking' %}" class="btn btn-success float-right">
-        </div>
-      </div>
+    
+     
+    </form>
     </section>
     <!-- /.content -->
   </div>
@@ -107,7 +120,7 @@
 
 
 
-<div id="canvas-editor" style="margin-right: auto;"></div>
+<!-- <div id="canvas-editor" style="margin-right: auto;"></div>
         
         <script src="/static/drawerJs/dist/jquery-3.4.1.min.js"></script>
         <script src="/static/drawerJs/dist/drawerJs.standalone.js"></script>
@@ -261,15 +274,15 @@
                 console.log(localStorage.getItem('canvasData'))
             }
 
-    </script>
+    </script> -->
 
 
-<div class="col-9" style="margin-top: 3%; margin-left: auto; margin-right: auto;">
+<!-- <div class="col-9" style="margin-top: 3%; margin-left: auto; margin-right: auto;"> -->
     <!-- <p>
         <button id="saveCanvas" onclick="saveCanvas()">{% trans 'Save parking setup' %}</button>
     </p> -->
 
-    <table class="table table-striped">
+    <!-- <table class="table table-striped">
         <tr  class="bg-info">
             <th>V1</th>
             <th>V2</th>
@@ -281,7 +294,7 @@
             
         </tbody>
     </table>
-</div>
+</div> -->
 
 <script>
    var map = L.map('map').
@@ -304,8 +317,8 @@
         markersLayer.clearLayers(); // Clear previous marker
         L.marker(e.latlng).addTo(markersLayer); // Add the marker to the map
 
-        document.getElementById("inParkingLat").value = e.latlng.lat
-        document.getElementById("inParkingLng").value = e.latlng.lng
+        document.getElementById("inParkingLat").value = Number((e.latlng.lat).toFixed(6));
+        document.getElementById("inParkingLng").value = Number((e.latlng.lng).toFixed(6));
             
         fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='+e.latlng.lat+'&lon='+e.latlng.lng)
         .then(response => response.json())

@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from VisionParkWeb.forms import SignUpForm
-
+from VisionParkWeb.forms import AddParkingForm
 
 def home(request):
 
@@ -65,8 +65,27 @@ def hereda(request):
 
 @login_required
 def setup(request):
+# https://docs.djangoproject.com/en/3.2/topics/forms/
+    if request.method=="POST":
+        print(request.POST)
+        form = AddParkingForm(request.POST)
+        
+        if form.is_valid():
+            
+            print("Valid form ->", form.cleaned_data)
 
-    return render(request, "manage/setup.html")
+            # Add the user and commit the object to database
+            stock = form.save(commit=False)
+            print("stock",stock)
+            stock.user = request.user
+            stock.save()
+            return render(request, "manage/myparkings.html")
+        else:
+            print(form.errors)
+    else:
+        form = AddParkingForm()
+
+    return render(request, "manage/setup.html", {'form' : form})
 
 @login_required   
 def my_parkings(request):
