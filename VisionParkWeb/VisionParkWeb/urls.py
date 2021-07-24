@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls import url
 from VisionParkWeb.views import *
-
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,6 +29,7 @@ urlpatterns = [
     path('about/', about),
     url(r'^signup/$', signup, name='signup'),
 ]
+urlpatterns += staticfiles_urlpatterns()
 
 #Add Django site authentication urls (for login, logout, password management)
 urlpatterns += [

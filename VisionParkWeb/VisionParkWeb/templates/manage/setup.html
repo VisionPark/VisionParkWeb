@@ -44,13 +44,13 @@
     </section>
 
     <!-- Main content -->
-    <section class="content">
+    <section class="content" style="margin:auto">
       <form action="/manage/setup" method="POST"> {% csrf_token %}
       <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-11">
           <div class="card card-primary">
             <div class="card-header">
-              <h3 class="card-title">{% trans 'Parking information' %}</h3>
+              <h3 class="card-title"><b>{% trans 'Parking information' %}</b></h3>
 
               <div class="card-tools">
                 <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">

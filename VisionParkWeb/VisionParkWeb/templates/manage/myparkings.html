@@ -1,10 +1,128 @@
 {% extends 'adminlte/base.html' %}
-{% load i18n %}
+{% load i18n static %}
+{% block extra_head %}
+<!-- <link rel="stylesheet" type="text/css" href="{% static 'admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.css' %}"> -->
 
-{% block title %}{% trans 'Setup' %}{% endblock %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="{% static 'css/myparkings.css' %}">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.25/r-2.2.9/rr-1.2.8/datatables.min.css"/>
+
+{% endblock %}
+
 
 {% block content %}
 
-my parkings
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper"  style="margin:auto">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+           
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="/home">Home</a></li>
+              <li class="breadcrumb-item active">{% trans 'My Parkings' %}</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
 
+    <!-- Main content -->
+    <section class="content">
+        <div class="module col-md-11 table-container">
+
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title"><b>{% trans 'My Parkings list' %}</b></h3>
+    
+                    <div class="card-tools">
+                    <button type="button" class="btn btn-tool" title="Add new parking" onclick="location.href='setup'" >
+                        <i class="fas fa-plus">{% trans ' New Parking' %}</i></button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table id="parkings-table" class="table table-bordered table-hover table-striped">
+                        <thead>
+                        <tr>
+                            <th scope="col">{% trans 'Name' %}</th>
+                            <th scope="col">{% trans 'Address' %}</th>
+                            <th scope="col">{% trans 'Postcode' %}</th>
+                            <th scope="col">{% trans 'Date Created' %}</th>
+                            <th scope="col">{% trans 'Date Modified' %}</th>
+                            <th scope="col" class="no-sort"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for parking in parkings %}
+                        <tr>
+                            
+                            <td>{{ parking.name }}</td>
+                            <td>{{ parking.address }}</td>
+                            <td>{{ parking.postcode }}</td>
+                            <td scope="row">{{ parking.date_created }}</td>
+                            <td scope="row">{{ parking.date_modified }}</td>
+                            <td class="text-right">
+                                <a class="btn btn-primary btn-sm" href="#">
+                                    <i class="fas fa-folder">
+                                    </i>
+                                    View
+                                </a>
+                                <a class="btn btn-info btn-sm" href="#">
+                                    <i class="fas fa-pencil-alt">
+                                    </i>
+                                    Edit
+                                </a>
+                                <a class="btn btn-danger btn-sm" href="#">
+                                    <i class="fas fa-trash">
+                                    </i>
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
+       
+    </section>
+{% endblock %}
+
+
+{% block extra_js %}
+
+ 
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/r-2.2.9/rr-1.2.8/datatables.min.js"></script>
+<!-- <script src="{% static 'admin-lte/plugins/datatables/jquery.dataTables.js' %}"></script>
+<script src="{% static 'admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.js' %}"></script> -->
+<script>
+    
+// https://datatables.net/reference/option/
+$(function () {
+  $('#parkings-table').DataTable(
+   {
+        "order": [[ 4, "desc" ]],
+        "paging": true,
+        "searching": true,
+        "stateSave": true,
+        "orderClasses": true,
+        "autoWidth": true,
+        "pagingType": "numbers",
+        "columnDefs": [ {
+            "targets"  : 'no-sort',
+            "orderable": false,
+            }]
+       
+     });
+  });
+  
+
+</script>
 {% endblock %}

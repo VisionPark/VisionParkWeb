@@ -8,6 +8,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from VisionParkWeb.forms import SignUpForm
 from VisionParkWeb.forms import AddParkingForm
+from manageParking.models import Parking
 
 def home(request):
 
@@ -89,8 +90,14 @@ def setup(request):
 
 @login_required   
 def my_parkings(request):
+  # https://stackoverflow.com/questions/59408167/list-of-current-user-objects-in-django-listview
+    model = Parking
 
-    return render(request, "manage/myparkings.html")
+    parkings = Parking.objects.filter(
+            user=request.user
+        )
+
+    return render(request, "manage/myparkings.html", {'parkings' : parkings})
 
 # TODO: keep data on submit with errors
 def signup(request):
