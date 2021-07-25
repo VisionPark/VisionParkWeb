@@ -25,6 +25,7 @@ urlpatterns = [
     path('edades/<int:edad>/<int:year>', calculaEdad),
     path('hereda/', hereda),
     path('manage/setup', setup),
+    path('manage/edit/<int:id>', setup),
     path('manage/myparkings', my_parkings),
     path('about/', about),
     url(r'^signup/$', signup, name='signup'),

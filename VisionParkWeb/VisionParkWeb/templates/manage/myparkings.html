@@ -38,16 +38,17 @@
             <div class="card card-primary">
                 <div class="card-header">
                     <h3 class="card-title"><b>{% trans 'My Parkings list' %}</b></h3>
-    
-                    <div class="card-tools">
-                    <button type="button" class="btn btn-tool" title="Add new parking" onclick="location.href='setup'" >
-                        <i class="fas fa-plus">{% trans ' New Parking' %}</i></button>
+                    <div class="card-tools" id=card-tools>
+                        <button type="button" class="btn btn-success btn-block" title="Add new parking" onclick="location.href='setup'" >
+                            <i class="fas fa-plus"><b>{% trans ' New Parking' %}</b></i>
+                        </button>
                     </div>
                 </div>
                 <div class="card-body">
                     <table id="parkings-table" class="table table-bordered table-hover table-striped">
                         <thead>
                         <tr>
+                            <th scope="col">{% trans 'ID' %}</th>
                             <th scope="col">{% trans 'Name' %}</th>
                             <th scope="col">{% trans 'Address' %}</th>
                             <th scope="col">{% trans 'Postcode' %}</th>
@@ -59,7 +60,7 @@
                         <tbody>
                         {% for parking in parkings %}
                         <tr>
-                            
+                            <td>{{ parking.id }}</td>
                             <td>{{ parking.name }}</td>
                             <td>{{ parking.address }}</td>
                             <td>{{ parking.postcode }}</td>
@@ -71,7 +72,7 @@
                                     </i>
                                     View
                                 </a>
-                                <a class="btn btn-info btn-sm" href="#">
+                                <a class="btn btn-info btn-sm" href="edit/{{ parking.id }}">
                                     <i class="fas fa-pencil-alt">
                                     </i>
                                     Edit

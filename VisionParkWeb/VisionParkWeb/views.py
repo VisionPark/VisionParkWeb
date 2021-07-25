@@ -9,6 +9,8 @@ from django.contrib.auth.forms import UserCreationForm
 from VisionParkWeb.forms import SignUpForm
 from VisionParkWeb.forms import AddParkingForm
 from manageParking.models import Parking
+from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect, render, reverse
 
 def home(request):
 
@@ -65,12 +67,29 @@ def hereda(request):
     return render(request, 'hereda.html', {"dame_fecha": fecha})
 
 @login_required
-def setup(request):
+def setup(request, id=None):
 # https://docs.djangoproject.com/en/3.2/topics/forms/
-    if request.method=="POST":
-        print(request.POST)
-        form = AddParkingForm(request.POST)
+# https://stackoverflow.com/questions/1854237/django-edit-form-based-on-add-form
+
+    # Once submitted the form
+    if request.method=="POST": 
+
+        hidden_id = request.POST.get('hidden_id')
+        print("HIDDEN< ", hidden_id)
+
+        # Editing existing parking
+        if hidden_id != None: 
+            parking = get_object_or_404(Parking, pk=int(hidden_id))
+            if parking.user != request.user:
+                return HttpResponseForbidden()
         
+            form = AddParkingForm(request.POST or None, instance=parking)
+        
+        # Creating new parking
+        else:
+            form = AddParkingForm(request.POST)
+        
+        # Valid data
         if form.is_valid():
             
             print("Valid form ->", form.cleaned_data)
@@ -80,18 +99,34 @@ def setup(request):
             print("stock",stock)
             stock.user = request.user
             stock.save()
-            return render(request, "manage/myparkings.html")
+
+            parkings = Parking.objects.filter(user=request.user)
+            return render(request, "manage/myparkings.html", {'added_ok' : True, 'parkings' : parkings})
+            
+        # Invalid data
         else:
             print(form.errors)
-    else:
-        form = AddParkingForm()
 
+    # First time entering the page
+    else:
+        # Editing existing parking
+        if id:
+            print("ID: ", id)
+            parking = get_object_or_404(Parking, pk=id)
+            if parking.user != request.user:
+                return HttpResponseForbidden()
+        
+            form = AddParkingForm(request.POST or None, instance=parking)
+
+        # Creating new parking
+        else:
+            form = AddParkingForm()
+        
     return render(request, "manage/setup.html", {'form' : form})
 
 @login_required   
 def my_parkings(request):
   # https://stackoverflow.com/questions/59408167/list-of-current-user-objects-in-django-listview
-    model = Parking
 
     parkings = Parking.objects.filter(
             user=request.user

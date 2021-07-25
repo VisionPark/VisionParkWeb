@@ -20,7 +20,13 @@
 
 {% load i18n %}
 
-{% block title %}{% trans 'Setup' %}{% endblock %}
+{% block title %}
+  {% if form.instance.id %}
+    {% trans 'Edit' %}
+  {% else %}
+    {% trans 'Setup' %}
+  {% endif %}
+{% endblock %}
 
 {% block content %}
 
@@ -31,12 +37,22 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>{% trans 'Setup a new Parking' %}</h1>
+            <h1>{% if form.instance.id %}
+                  {% trans 'Edit existing parking' %}
+                {% else %}
+                  {% trans 'Create a new parking' %}
+                {% endif %}
+            </h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="/home">Home</a></li>
-              <li class="breadcrumb-item active">{% trans 'Setup Parking' %}</li>
+              <li class="breadcrumb-item active">{% if form.instance.id %}
+                                                    {% trans 'Edit Parking' %}
+                                                  {% else %}
+                                                    {% trans 'Setup Parking' %}
+                                                   {% endif %} 
+              </li>
             </ol>
           </div>
         </div>
@@ -45,7 +61,7 @@
 
     <!-- Main content -->
     <section class="content" style="margin:auto">
-      <form action="/manage/setup" method="POST"> {% csrf_token %}
+      <form action="/manage/setup" method="POST" > {% csrf_token %}
       <div class="row">
         <div class="col-md-11">
           <div class="card card-primary">
@@ -66,29 +82,30 @@
               </div>
               {% endif %}
 
+                <input type="hidden" name="hidden_id" value="{{form.instance.id}}" />
               
                 <div class="form-group">
                   <label for="inputName">{% trans 'Parking name' %}</label>
-                  <input type="text" id="inParkingName" name="name" class="form-control">
+                  <input type="text" id="inParkingName" name="name" class="form-control" value="{{form.instance.name}}">
                 </div>
                 <div class="form-group" style="display: table;">
                   <div style="display: table-cell;">
                     <label for="inputDescription">{% trans 'Parking address' %}</label>
-                    <input type="text" id="inParkingAddress" name="address" class="form-control">
+                    <input type="text" id="inParkingAddress" name="address" class="form-control" value="{{form.instance.address}}">
                   </div>
                   <div style="display: table-cell; width: 20%; margin: auto;">
                     <label for="inputDescription">{% trans 'PostCode' %}</label>
-                    <input type="number" id="inParkingPostCode" name="postcode" class="form-control">
+                    <input type="number" id="inParkingPostCode" name="postcode" class="form-control" value="{{form.instance.postcode}}">
                   </div>
                 </div>
                 <div class="form-group" style="display: table;">
                   <div style="display: table-cell;">
                     <label for="inputDescription">{% trans 'Parking coordinates: lat' %}</label>
-                    <input type="number" id="inParkingLat" name="lat" step="any" class="form-control">
+                    <input type="number" id="inParkingLat" name="lat" step="any" class="form-control" value="{{form.instance.lat}}">
                   </div>
                   <div style="display: table-cell;">
                     <label for="inputDescription">{% trans 'Parking coordinates: lng' %}</label>
-                    <input type="number" id="inParkingLng" name="lon" step="any" class="form-control">
+                    <input type="number" id="inParkingLng" name="lon" step="any" class="form-control" value="{{form.instance.lon}}">
                   </div>
                 </div>
                 <div class="form-group">
@@ -99,7 +116,13 @@
               </div>
 
               <div class="col-12">
-                <input type="submit" value="{% trans 'Create a new parking' %}" class="btn btn-success float-right">
+                <input type="submit"
+                  value="{% if form.instance.id %}
+                            {% trans 'Edit existing parking' %}
+                          {% else %}
+                            {% trans 'Create a new parking' %}
+                          {% endif %}" 
+                  class="btn btn-success float-right">
               </div>
 
             </div>
@@ -335,6 +358,12 @@
     }
 
   map.on('click', onMapClick);
+
+  //Edit form, put marker on map
+  if("{{form.instance.lat}}" != "None" && "{{form.instance.lon}}" != "None"){
+    markersLayer.clearLayers(); // Clear previous marker
+    L.marker({lat:"{{form.instance.lat}}", lon:"{{form.instance.lon}}"}).addTo(markersLayer); // Add the marker to the map
+  }
 </script>
 
 {% endblock %}

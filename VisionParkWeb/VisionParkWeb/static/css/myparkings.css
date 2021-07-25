@@ -6,3 +6,9 @@ table thead {
 .table-container {
   margin: auto;
 }
+
+div#card-tools {
+
+  margin-right: 0.05rem;
+
+}
