@@ -12,3 +12,13 @@ div#card-tools {
   margin-right: 0.05rem;
 
 }
+
+div.delete-parking{
+  display: none;
+  position: absolute;
+  width: 50%;
+  margin: 5% auto; /* Will not center vertically and won't work in IE6/7. */
+  left: 0;
+  right: 0;
+  z-index: 1;
+}

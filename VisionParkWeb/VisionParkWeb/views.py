@@ -128,9 +128,10 @@ def setup(request, id=None):
 def my_parkings(request):
   # https://stackoverflow.com/questions/59408167/list-of-current-user-objects-in-django-listview
 
-    parkings = Parking.objects.filter(
-            user=request.user
-        )
+    if request.method=="POST":
+        return redirect("/manage/delete/"+request.POST.get('hidden_id'))
+
+    parkings = Parking.objects.filter(user=request.user)
 
     return render(request, "manage/myparkings.html", {'parkings' : parkings})
 
@@ -148,3 +149,19 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, 'registration/signup.html', {'form': form})
+
+@login_required 
+def parking_delete(request, id):
+ # https://www.youtube.com/watch?v=3VBHWLFza4s
+
+    parking = get_object_or_404(Parking, id=id)
+
+    if parking.user != request.user:
+        return HttpResponseForbidden()
+
+    else:
+        print("Deleted: ", parking)
+        parking.delete()
+         
+    parkings = Parking.objects.filter(user=request.user)
+    return redirect('/manage/myparkings', {'parkings' : parkings, 'deleted_ok': parking})

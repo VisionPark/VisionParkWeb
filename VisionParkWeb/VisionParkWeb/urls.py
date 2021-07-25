@@ -29,6 +29,7 @@ urlpatterns = [
     path('manage/myparkings', my_parkings),
     path('about/', about),
     url(r'^signup/$', signup, name='signup'),
+    path('manage/delete/<int:id>', parking_delete)
 ]
 urlpatterns += staticfiles_urlpatterns()
 
