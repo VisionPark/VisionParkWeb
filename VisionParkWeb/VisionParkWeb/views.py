@@ -67,7 +67,7 @@ def hereda(request):
     return render(request, 'hereda.html', {"dame_fecha": fecha})
 
 @login_required
-def setup(request, id=None):
+def add_parking(request, id=None):
 # https://docs.djangoproject.com/en/3.2/topics/forms/
 # https://stackoverflow.com/questions/1854237/django-edit-form-based-on-add-form
 
@@ -78,7 +78,7 @@ def setup(request, id=None):
         print("HIDDEN< ", hidden_id)
 
         # Editing existing parking
-        if hidden_id != None: 
+        if hidden_id is not None and hidden_id != 'None': 
             parking = get_object_or_404(Parking, pk=int(hidden_id))
             if parking.user != request.user:
                 return HttpResponseForbidden()
@@ -101,7 +101,7 @@ def setup(request, id=None):
             stock.save()
 
             parkings = Parking.objects.filter(user=request.user)
-            return render(request, "manage/myparkings.html", {'added_ok' : True, 'parkings' : parkings})
+            return redirect('/manage/myparkings', {'parkings' : parkings, 'added_ok': True})
             
         # Invalid data
         else:
@@ -122,7 +122,67 @@ def setup(request, id=None):
         else:
             form = AddParkingForm()
         
-    return render(request, "manage/setup.html", {'form' : form})
+    return render(request, "manage/add.html", {'form' : form})
+
+@login_required
+def setup_parking(request, id=None):
+# https://docs.djangoproject.com/en/3.2/topics/forms/
+# https://stackoverflow.com/questions/1854237/django-edit-form-based-on-add-form
+
+    # Once submitted the form
+    if request.method=="POST": 
+
+        hidden_id = request.POST.get('hidden_id')
+        print("HIDDEN< ", hidden_id)
+
+        # Editing existing parking
+        if hidden_id != None: 
+            parking = get_object_or_404(Parking, pk=int(hidden_id))
+            if parking.user != request.user:
+                return HttpResponseForbidden()
+        
+            form = AddParkingForm(request.POST or None, instance=parking)
+        
+        # Creating new parking
+        else:
+            parkings = Parking.objects.filter(user=request.user)
+            return redirect('/manage/myparkings', {'parkings' : parkings, 'setup_ok': False})
+        
+        # Valid data
+        if form.is_valid():
+            
+            print("Valid form ->", form.cleaned_data)
+
+            # Add the user and commit the object to database
+            stock = form.save(commit=False)
+            print("stock",stock)
+            stock.user = request.user
+            stock.save()
+
+            parkings = Parking.objects.filter(user=request.user)
+            return redirect('/manage/myparkings', {'parkings' : parkings, 'added_ok': True})
+            
+        # Invalid data
+        else:
+            print(form.errors)
+
+    # First time entering the page
+    else:
+        # Editing existing parking
+        if id:
+            print("ID: ", id)
+            parking = get_object_or_404(Parking, pk=id)
+            if parking.user != request.user:
+                return HttpResponseForbidden()
+        
+            form = AddParkingForm(request.POST or None, instance=parking)
+
+        # Creating new parking
+        else:
+            parkings = Parking.objects.filter(user=request.user)
+            return redirect('/manage/myparkings', {'parkings' : parkings, 'setup_ok': False})
+        
+    return render(request, "manage/add.html", {'form' : form})
 
 @login_required   
 def my_parkings(request):

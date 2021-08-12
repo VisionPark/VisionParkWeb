@@ -24,9 +24,10 @@ urlpatterns = [
     path('', home, name='home'),
     path('edades/<int:edad>/<int:year>', calculaEdad),
     path('hereda/', hereda),
-    path('manage/setup', setup),
-    path('manage/edit/<int:id>', setup),
+    path('manage/add', add_parking),
+    path('manage/edit/<int:id>', add_parking),
     path('manage/myparkings', my_parkings),
+    path('manage/setup/<int:id>', setup_parking),
     path('about/', about),
     url(r'^signup/$', signup, name='signup'),
     path('manage/delete/<int:id>', parking_delete)

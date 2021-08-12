@@ -62,69 +62,76 @@
     <!-- Main content -->
     <section class="content" style="margin:auto">
       <form action="/manage/add" method="POST" > {% csrf_token %}
-        <div class="row">
-          <div class="col-md-11">
-            <div class="card card-primary">
-              <div class="card-header">
-                <h3 class="card-title"><b>{% trans 'Parking information' %}</b></h3>
+      <div class="row">
+        <div class="col-md-11">
+          <div class="card card-primary">
+            <div class="card-header">
+              <h3 class="card-title"><b>{% trans 'Parking information' %}</b></h3>
 
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
-                    <i class="fas fa-minus"></i></button>
-                </div>
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                  <i class="fas fa-minus"></i></button>
               </div>
-              <div class="card-body">
-                
-                  {% if form.errors %}
-                  <div class="fieldWrapper">
-                    <p><b>Errors</b></p>
-                    {{form.errors}}
-                  </div>
-                  {% endif %}
-
-                    <input type="hidden" name="hidden_id" value="{{form.instance.id}}" />
-
-                    <div id="canvas-editor" style="margin-right: auto;"></div>
-
-                    <div class="col-9" style="margin-top: 3%; margin-left: auto; margin-right: auto;"> -->
-                      <p>
-                          <button id="saveCanvas" onclick="saveCanvas()">{% trans 'Save parking setup' %}</button>
-                      </p>
-                  
-                    <table class="table table-striped">
-                          <tr  class="bg-info">
-                              <th>V1</th>
-                              <th>V2</th>
-                              <th>V3</th>
-                              <th>V4</th>
-                          </tr>
-                  
-                          <tbody id="myTable">
-                              
-                          </tbody>
-                      </table>
-                  </div> 
-                  
-                  
-                </div>
-
-                <div class="col-12">
-                  <input type="submit" style="display: block ruby;"
-                    value="{% if form.instance.id %}
-                              {% trans 'Edit existing parking' %}
-                            {% else %}
-                              {% trans 'Create a new parking' %}
-                            {% endif %}" 
-                    class="btn btn-success float-right">
-                </div>
-
-              </div>
-              <!-- /.card-body -->
             </div>
-            <!-- /.card -->
+            <div class="card-body">
+             
+              {% if form.errors %}
+              <div class="fieldWrapper">
+                <p><b>Errors</b></p>
+                {{form.errors}}
+              </div>
+              {% endif %}
+
+                <input type="hidden" name="hidden_id" value="{{form.instance.id}}" />
+              
+                <div class="form-group">
+                  <label for="inputName">{% trans 'Parking name' %}</label>
+                  <input type="text" id="inParkingName" name="name" class="form-control" value="{{form.instance.name}}">
+                </div>
+                <div class="form-group" style="display: table;">
+                  <div style="display: table-cell;">
+                    <label for="inputDescription">{% trans 'Parking address' %}</label>
+                    <input type="text" id="inParkingAddress" name="address" class="form-control" value="{{form.instance.address}}">
+                  </div>
+                  <div style="display: table-cell; width: 20%; margin: auto;">
+                    <label for="inputDescription">{% trans 'PostCode' %}</label>
+                    <input type="number" id="inParkingPostCode" name="postcode" class="form-control" value="{{form.instance.postcode}}">
+                  </div>
+                </div>
+                <div class="form-group" style="display: table;">
+                  <div style="display: table-cell;">
+                    <label for="inputDescription">{% trans 'Parking coordinates: lat' %}</label>
+                    <input type="number" id="inParkingLat" name="lat" step="any" class="form-control" value="{{form.instance.lat}}">
+                  </div>
+                  <div style="display: table-cell;">
+                    <label for="inputDescription">{% trans 'Parking coordinates: lng' %}</label>
+                    <input type="number" id="inParkingLng" name="lon" step="any" class="form-control" value="{{form.instance.lon}}">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div id="map">
+                    
+                  </div>
+                
+              </div>
+
+              <div class="col-12">
+                <input type="submit" style="display: block ruby;"
+                  value="{% if form.instance.id %}
+                            {% trans 'Edit existing parking' %}
+                          {% else %}
+                            {% trans 'Create a new parking' %}
+                          {% endif %}" 
+                  class="btn btn-success float-right">
+              </div>
+
+            </div>
+            <!-- /.card-body -->
           </div>
-      
+          <!-- /.card -->
         </div>
+      
+      </div>
     
      
     </form>
@@ -136,7 +143,7 @@
 
 
 
-
+<!-- <div id="canvas-editor" style="margin-right: auto;"></div>
         
         <script src="/static/drawerJs/dist/jquery-3.4.1.min.js"></script>
         <script src="/static/drawerJs/dist/drawerJs.standalone.js"></script>
@@ -290,6 +297,73 @@
                 console.log(localStorage.getItem('canvasData'))
             }
 
-    </script>
+    </script> -->
+
+
+<!-- <div class="col-9" style="margin-top: 3%; margin-left: auto; margin-right: auto;"> -->
+    <!-- <p>
+        <button id="saveCanvas" onclick="saveCanvas()">{% trans 'Save parking setup' %}</button>
+    </p> -->
+
+    <!-- <table class="table table-striped">
+        <tr  class="bg-info">
+            <th>V1</th>
+            <th>V2</th>
+            <th>V3</th>
+            <th>V4</th>
+        </tr>
+
+        <tbody id="myTable">
+            
+        </tbody>
+    </table>
+</div> -->
+
+<script>
+   var map = L.map('map').
+        setView([37.2655892,-6.9362852],14); //Huelva
+   var layer =L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'VisionPark - Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>'
+        }).addTo(map);
+    L.control.scale().addTo(map);
+                
+    var offset = map.getSize().x*0.15;
+    // Then move the map
+    map.panBy(new L.Point(-offset, 0), {animate: false});
+
+    //var layerGroup = L.layerGroup().addTo(map);
+    var markersLayer = L.featureGroup().addTo(map);
+
+    function onMapClick(e) {
+        console.log("Map click: " + e.latlng)
+
+        markersLayer.clearLayers(); // Clear previous marker
+        L.marker(e.latlng).addTo(markersLayer); // Add the marker to the map
+
+        document.getElementById("inParkingLat").value = Number((e.latlng.lat).toFixed(6));
+        document.getElementById("inParkingLng").value = Number((e.latlng.lng).toFixed(6));
+            
+        fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='+e.latlng.lat+'&lon='+e.latlng.lng)
+        .then(response => response.json())
+        .then(json => setParkingAddress(json))
+    } 
+
+    function setParkingAddress(json)
+    {
+      console.log(json)
+
+      document.getElementById("inParkingAddress").value = json.display_name.split(",",3)
+      document.getElementById("inParkingPostCode").value = json.address.postcode
+
+    }
+
+  map.on('click', onMapClick);
+
+  //Edit form, put marker on map
+  if("{{form.instance.lat}}" != "None" && "{{form.instance.lon}}" != "None"){
+    markersLayer.clearLayers(); // Clear previous marker
+    L.marker({lat:"{{form.instance.lat}}", lon:"{{form.instance.lon}}"}).addTo(markersLayer); // Add the marker to the map
+  }
+</script>
 
 {% endblock %}
