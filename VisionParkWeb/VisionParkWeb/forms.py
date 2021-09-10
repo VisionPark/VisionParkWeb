@@ -1,3 +1,4 @@
+from manageParking.models import Space
 from manageParking.models import Parking
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
@@ -17,3 +18,8 @@ class AddParkingForm(ModelForm):
     class Meta:
         model = Parking
         exclude = ('user', 'date_created', 'date_modified')
+
+class SetupParkingForm(ModelForm):
+    class Meta:
+        model = Space
+        fields = '__all__'

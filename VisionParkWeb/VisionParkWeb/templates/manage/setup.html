@@ -21,11 +21,7 @@
 {% load i18n %}
 
 {% block title %}
-  {% if form.instance.id %}
-    {% trans 'Edit' %}
-  {% else %}
-    {% trans 'Add' %}
-  {% endif %}
+Setup
 {% endblock %}
 
 {% block content %}
@@ -37,21 +33,14 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>{% if form.instance.id %}
-                  {% trans 'Edit existing parking' %}
-                {% else %}
-                  {% trans 'Create a new parking' %}
-                {% endif %}
+            <h1>
+                  {% trans 'Setup existing parking' %}
             </h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="/home">Home</a></li>
-              <li class="breadcrumb-item active">{% if form.instance.id %}
-                                                    {% trans 'Edit Parking' %}
-                                                  {% else %}
-                                                    {% trans 'Add Parking' %}
-                                                   {% endif %} 
+              <li class="breadcrumb-item active">{% trans 'Setup existing parking' %}
               </li>
             </ol>
           </div>
@@ -63,7 +52,7 @@
     <section class="content" style="margin:auto">
       <form action="/manage/add" method="POST" > {% csrf_token %}
         <div class="row">
-          <div class="col-md-11">
+          <div class="col-md-12">
             <div class="card card-primary">
               <div class="card-header">
                 <h3 class="card-title"><b>{% trans 'Parking information' %}</b></h3>
@@ -87,10 +76,13 @@
                     <div id="canvas-editor" style="margin-right: auto;"></div>
 
                     <div class="col-9" style="margin-top: 3%; margin-left: auto; margin-right: auto;"> -->
-                      <p>
-                          <button id="saveCanvas" onclick="saveCanvas()">{% trans 'Save parking setup' %}</button>
-                      </p>
-                  
+                  <div class="col-12">
+                    <button style="display: block ruby;"
+                      class="btn btn-success float-right"
+                      onclick="saveCanvas()">
+                      {% trans 'Save setup' %}
+                      </button>
+                   </div>
                     <table class="table table-striped">
                           <tr  class="bg-info">
                               <th>V1</th>
@@ -108,15 +100,7 @@
                   
                 </div>
 
-                <div class="col-12">
-                  <input type="submit" style="display: block ruby;"
-                    value="{% if form.instance.id %}
-                              {% trans 'Edit existing parking' %}
-                            {% else %}
-                              {% trans 'Create a new parking' %}
-                            {% endif %}" 
-                    class="btn btn-success float-right">
-                </div>
+
 
               </div>
               <!-- /.card-body -->
@@ -133,11 +117,8 @@
   </div>
   <!-- /.content-wrapper -->
 
+{% comment %} TODO: https://stackoverflow.com/questions/9864036/send-javascript-data-to-django-views {% endcomment %}
 
-
-
-
-        
         <script src="/static/drawerJs/dist/jquery-3.4.1.min.js"></script>
         <script src="/static/drawerJs/dist/drawerJs.standalone.js"></script>
         <script src="/static/drawerJs/drawerLocalization.js"></script>
@@ -217,7 +198,6 @@
                 'Polygon',
                 'ShapeContextMenu',
                 'Zoom',
-                
                 ];
 
             $(document).ready(function () {
@@ -281,13 +261,44 @@
                     }, canvasWidth, canvasHeight);
                     $('#canvas-editor').append(drawer2.getHtml());
                     
-                
                     drawer2.onInsert();
                     drawer2.api.startEditing();
                     drawer2.loadCanvas(localStorage.getItem('canvasData'));
                     
                 });
-                console.log(localStorage.getItem('canvasData'))
+                console.log(localStorage.getItem('canvasData'));
+                console.log("saveCanvas");
+                
+            }
+
+          /** https://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit
+            * sends a request to the specified url from a form. this will change the window location.
+            * @param {string} path the path to send the post request to
+            * @param {object} params the parameters to add to the url
+            * @param {string} [method=post] the method to use on the form
+            */
+
+            function post(path, params, method='post') {
+
+              // The rest of this code assumes you are not using a library.
+              // It can be made less verbose if you use one.
+              const form = document.createElement('form');
+              form.method = method;
+              form.action = path;
+
+              for (const key in params) {
+                if (params.hasOwnProperty(key)) {
+                  const hiddenField = document.createElement('input');
+                  hiddenField.type = 'hidden';
+                  hiddenField.name = key;
+                  hiddenField.value = params[key];
+
+                  form.appendChild(hiddenField);
+                }
+              }
+
+              document.body.appendChild(form);
+              form.submit();
             }
 
     </script>

@@ -8,6 +8,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from VisionParkWeb.forms import SignUpForm
 from VisionParkWeb.forms import AddParkingForm
+from VisionParkWeb.forms import SetupParkingForm
 from manageParking.models import Parking
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render, reverse
@@ -135,15 +136,15 @@ def setup_parking(request, id=None):
         hidden_id = request.POST.get('hidden_id')
         print("HIDDEN< ", hidden_id)
 
-        # Editing existing parking
-        if hidden_id != None: 
+        # Setup existing parking
+        if hidden_id is not None and hidden_id != 'None': 
             parking = get_object_or_404(Parking, pk=int(hidden_id))
             if parking.user != request.user:
                 return HttpResponseForbidden()
         
-            form = AddParkingForm(request.POST or None, instance=parking)
+            form = SetupParkingForm(request.POST or None, instance=parking)
         
-        # Creating new parking
+        # Creating new parking, redirect
         else:
             parkings = Parking.objects.filter(user=request.user)
             return redirect('/manage/myparkings', {'parkings' : parkings, 'setup_ok': False})
@@ -182,7 +183,7 @@ def setup_parking(request, id=None):
             parkings = Parking.objects.filter(user=request.user)
             return redirect('/manage/myparkings', {'parkings' : parkings, 'setup_ok': False})
         
-    return render(request, "manage/add.html", {'form' : form})
+    return render(request, "manage/setup.html", {'form' : form})
 
 @login_required   
 def my_parkings(request):
