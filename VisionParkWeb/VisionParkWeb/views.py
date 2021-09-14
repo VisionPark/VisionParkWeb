@@ -9,10 +9,10 @@ from django.contrib.auth.forms import UserCreationForm
 from VisionParkWeb.forms import SignUpForm
 from VisionParkWeb.forms import AddParkingForm
 from VisionParkWeb.forms import SetupParkingForm
-from manageParking.models import Parking
+from manageParking.models import Parking, Space
 from django.http import HttpResponseForbidden
-from django.shortcuts import get_object_or_404, redirect, render, reverse
-
+from django.shortcuts import get_object_or_404, get_list_or_404, redirect, render, reverse
+import json
 def home(request):
 
     return render(request, 'home.html')
@@ -134,38 +134,45 @@ def setup_parking(request, id=None):
     if request.method=="POST": 
 
         hidden_id = request.POST.get('hidden_id')
+        vertex = request.POST.get('vertex')
         print("HIDDEN< ", hidden_id)
+        print("ID< ", id)
 
         # Setup existing parking
-        if hidden_id is not None and hidden_id != 'None': 
-            parking = get_object_or_404(Parking, pk=int(hidden_id))
+        if id is not None and id != 'None' and vertex is not None and vertex != 'None': 
+            parking = get_object_or_404(Parking, pk=int(id))
             if parking.user != request.user:
                 return HttpResponseForbidden()
         
-            form = SetupParkingForm(request.POST or None, instance=parking)
-        
+            form = SetupParkingForm(None, instance=parking)
+            vertex =  json.loads(vertex) # Parse the stringyfied JSON
+            print("JSON vertex: ",vertex)
+            
+            new_spaces = []
+            for i,v in enumerate(vertex): #For each set of vertex of the spaces setup
+            # https://www.youtube.com/watch?v=DgokREtOaVA
+                print(i,":", v)
+                space = Space(
+                    parking = parking,
+                    shortName = "A"+str(i),
+                    vertex = v,
+                )
+                new_spaces.append(space)
+            Space.objects.bulk_create(new_spaces)
+            
+            # # Add the user and commit the object to database
+            # stock = form.save(commit=False)
+            # print("stock",stock)
+            # stock.user = request.user
+            # stock.save()
+
+            parkings = Parking.objects.filter(user=request.user)
+            return redirect('/manage/myparkings', {'parkings' : parkings, 'added_ok': True})
+
         # Creating new parking, redirect
         else:
             parkings = Parking.objects.filter(user=request.user)
             return redirect('/manage/myparkings', {'parkings' : parkings, 'setup_ok': False})
-        
-        # Valid data
-        if form.is_valid():
-            
-            print("Valid form ->", form.cleaned_data)
-
-            # Add the user and commit the object to database
-            stock = form.save(commit=False)
-            print("stock",stock)
-            stock.user = request.user
-            stock.save()
-
-            parkings = Parking.objects.filter(user=request.user)
-            return redirect('/manage/myparkings', {'parkings' : parkings, 'added_ok': True})
-            
-        # Invalid data
-        else:
-            print(form.errors)
 
     # First time entering the page
     else:
@@ -175,15 +182,15 @@ def setup_parking(request, id=None):
             parking = get_object_or_404(Parking, pk=id)
             if parking.user != request.user:
                 return HttpResponseForbidden()
-        
-            form = AddParkingForm(request.POST or None, instance=parking)
 
+            spaces = get_list_or_404(Space, parking=parking)       
+            return render(request, "manage/setup.html", {'spaces' : spaces})
+            
         # Creating new parking
         else:
             parkings = Parking.objects.filter(user=request.user)
             return redirect('/manage/myparkings', {'parkings' : parkings, 'setup_ok': False})
         
-    return render(request, "manage/setup.html", {'form' : form})
 
 @login_required   
 def my_parkings(request):

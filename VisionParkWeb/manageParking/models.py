@@ -23,8 +23,8 @@ class Parking(models.Model):
 class Space(models.Model):
     parking = models.ForeignKey(Parking, on_delete=models.CASCADE)
     shortName = models.CharField(max_length=4)
-    vacant = models.BooleanField(blank=True)
-    since = models.DateTimeField()
+    vacant = models.BooleanField(blank=True, null=True)
+    since = models.DateTimeField(null=True)
     vertex = models.JSONField()
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)

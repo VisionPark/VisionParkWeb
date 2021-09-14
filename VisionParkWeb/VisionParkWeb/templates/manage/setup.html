@@ -50,7 +50,7 @@ Setup
 
     <!-- Main content -->
     <section class="content" style="margin:auto">
-      <form action="/manage/add" method="POST" > {% csrf_token %}
+     {% csrf_token %}
         <div class="row">
           <div class="col-md-12">
             <div class="card card-primary">
@@ -123,7 +123,10 @@ Setup
         <script src="/static/drawerJs/dist/drawerJs.standalone.js"></script>
         <script src="/static/drawerJs/drawerLocalization.js"></script>
         <script src="/static/drawerJs/drawerJsConfig.js"></script>
-
+        <script>
+            var csrftoken = '{{ csrf_token }}';
+            var vertex;
+        </script>
         <script>
 
             var drawer = null;
@@ -136,25 +139,25 @@ Setup
             function buildTable(canvasId, canvasData) {
                 //var canvasJson = JSON.stringify(canvasData);
                 console.log(canvasData);
-
                 var data = JSON.parse(canvasData)
                 var table = document.getElementById('myTable')
                 table.innerHTML = "";
-               
+                vertex = []; //All spaces container
 
                 for (i in data.objects){
-
                     var obj = data.objects[i];
+                    space = []; // All vertex of the space
 
                     if(obj.type == "segmentablePolygon"){
                         var row = "<tr>"
-                
+        
                         var centerX = parseFloat(obj.left); //Absolute position of upper left vertex
                         var centerY = parseFloat(obj.top);
                         var scaleX = parseFloat(obj.scaleX);
                         var scaleY = parseFloat(obj.scaleY);
                         var sizeX = parseFloat(data.backgroundImage.width);
                         var sizeY = parseFloat(data.backgroundImage.height);
+                        
 
                         // Setting stroke
                         // obj.stroke = "#1f497d",
@@ -162,34 +165,35 @@ Setup
                         // obj.strokeDashArray = [8,8]
 
                         //console.log(centerX/sizeX*1280, centerY/sizeY*720)
+                          for(j in obj.points[0]){
+                            point = obj.points[0][j];
 
+                            /* Set centerXY to the actual center of the polygon
+                                  Translate upper left vertex to the center 
+                            */
+                            if(j==0){
+                              console.log("CenterX: "+centerX + " ; CenterY: "+ centerY);
+                              console.log("V1X: "+point.x + " ; V2Y: "+ point.y);
+                              
+                              centerX = centerX +  Math.abs(point.x);
+                              centerY = centerY +  Math.abs(point.y);
 
-                        for(j in obj.points[0]){
-                           point = obj.points[0][j]
-                        
-                           /* Set centerXY to the actual center of the polygon
-                                Translate upper left vertex to the center 
-                           */
-                           if(j==0){
-                            console.log("CenterX: "+centerX + " ; CenterY: "+ centerY)
-                            console.log("V1X: "+point.x + " ; V2Y: "+ point.y)
+                              console.log("New CenterX: "+centerX / sizeX *1280 + " ; CenterY: "+ centerY / sizeY *720);
+                            }
                             
-                            centerX = centerX +  Math.abs(point.x)
-                            centerY = centerY +  Math.abs(point.y)
+                              x = (parseFloat(point.x) + centerX)  / sizeX * 1280;
+                              y = (parseFloat(point.y) + centerY) / sizeY  * 720;          
 
-                            console.log("New CenterX: "+centerX / sizeX *1280 + " ; CenterY: "+ centerY / sizeY *720)
-                           }
+                              row += "<td>["+x + " , " + y+"]</td>";
+                              
+                              space[j] = [x,y] ;
+                          }
+                          row += "</tr>";
+                          table.innerHTML += row;
+                          vertex.push(space)
+                          console.log(vertex); 
+                      }  
                            
-                            x = (parseFloat(point.x) + centerX)  / sizeX * 1280
-                            y = (parseFloat(point.y) + centerY) / sizeY  * 720                
-
-                            row += "<td>["+x + " , " + y+"]</td>";
-
-                        }
-                        row += "</tr>"
-                        table.innerHTML += row
-                     }
-                    
                 }
             } //buildTable
 
@@ -240,35 +244,12 @@ Setup
 
 
             function saveCanvas(){
-                localStorage.setItem('canvasData', JSON.stringify(drawer.getCanvasData()));
-
-                $(document).ready(function () {
-                    drawer2 = new DrawerJs.Drawer(null, {
-                        texts: customLocalization,
-                        plugins: drawerPlugins,
-                        defaultImageUrl: '/static/drawerJS/play-button.png', // Click to start
-                        defaultActivePlugin : { name : 'Polygon', mode : 'lastUsed'},
-                        pluginsConfig: {
-                            BackgroundImage: {
-                                scaleDownLargeImage: true,
-                                imagePosition: 'stretch',
-                                dynamicRepositionImage: true,
-                                dynamicRepositionImageThrottle: 100,
-                                fixedBackgroundUrl: '/static/drawerJS/parking_sample.jpg',
-                            }
-                        },
-
-                    }, canvasWidth, canvasHeight);
-                    $('#canvas-editor').append(drawer2.getHtml());
-                    
-                    drawer2.onInsert();
-                    drawer2.api.startEditing();
-                    drawer2.loadCanvas(localStorage.getItem('canvasData'));
-                    
-                });
-                console.log(localStorage.getItem('canvasData'));
-                console.log("saveCanvas");
                 
+                console.log(JSON.parse(localStorage.getItem('canvasData')));
+                data = {vertex : JSON.stringify(vertex), csrfmiddlewaretoken: '{{ csrf_token }}', id: '{{form.instance.id}}'};
+                console.log(data);
+                post("", data);
+                console.log("saveCanvas");
             }
 
           /** https://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit
