@@ -27,7 +27,7 @@ Setup
 {% block content %}
 
 <!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
+<div class="content-wrapper" style="margin:auto">
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <div class="container-fluid">
@@ -75,7 +75,7 @@ Setup
 
                     <div id="canvas-editor" style="margin-right: auto;"></div>
 
-                    <div class="col-9" style="margin-top: 3%; margin-left: auto; margin-right: auto;"> -->
+                    <div class="col-9" style="margin-top: 3%; margin-left: auto; margin-right: auto;">
                   <div class="col-12">
                     <button style="display: block ruby;"
                       class="btn btn-success float-right"
@@ -118,7 +118,7 @@ Setup
   <!-- /.content-wrapper -->
 
 {% comment %} TODO: https://stackoverflow.com/questions/9864036/send-javascript-data-to-django-views {% endcomment %}
-
+{% comment %} https://phpsolved.com/drawerjs-unofficial-documentation/ {% endcomment %}
         <script src="/static/drawerJs/dist/jquery-3.4.1.min.js"></script>
         <script src="/static/drawerJs/dist/drawerJs.standalone.js"></script>
         <script src="/static/drawerJs/drawerLocalization.js"></script>
@@ -137,65 +137,66 @@ Setup
 
 
             function buildTable(canvasId, canvasData) {
-                //var canvasJson = JSON.stringify(canvasData);
                 console.log(canvasData);
                 var data = JSON.parse(canvasData)
-                var table = document.getElementById('myTable')
-                table.innerHTML = "";
-                vertex = []; //All spaces container
+                if(data.backgroundImage){
 
-                for (i in data.objects){
-                    var obj = data.objects[i];
-                    space = []; // All vertex of the space
+                  var table = document.getElementById('myTable')
+                  table.innerHTML = "";
+                  vertex = []; //All spaces container
 
-                    if(obj.type == "segmentablePolygon"){
-                        var row = "<tr>"
-        
-                        var centerX = parseFloat(obj.left); //Absolute position of upper left vertex
-                        var centerY = parseFloat(obj.top);
-                        var scaleX = parseFloat(obj.scaleX);
-                        var scaleY = parseFloat(obj.scaleY);
-                        var sizeX = parseFloat(data.backgroundImage.width);
-                        var sizeY = parseFloat(data.backgroundImage.height);
-                        
+                  for (i in data.objects){
+                      var obj = data.objects[i];
+                      space = []; // All vertex of the space
 
-                        // Setting stroke
-                        // obj.stroke = "#1f497d",
-                        // obj.strokeWidth = 5,
-                        // obj.strokeDashArray = [8,8]
+                      if(obj.type == "segmentablePolygon"){
+                          var row = "<tr>"
+          
+                          var centerX = parseFloat(obj.left); //Absolute position of upper left vertex
+                          var centerY = parseFloat(obj.top);
+                          var scaleX = parseFloat(obj.scaleX);
+                          var scaleY = parseFloat(obj.scaleY);
+                          var sizeX = parseFloat(data.backgroundImage.width);
+                          var sizeY = parseFloat(data.backgroundImage.height);
 
-                        //console.log(centerX/sizeX*1280, centerY/sizeY*720)
-                          for(j in obj.points[0]){
-                            point = obj.points[0][j];
+                          // Setting stroke
+                          // obj.stroke = "#1f497d",
+                          // obj.strokeWidth = 5,
+                          // obj.strokeDashArray = [8,8]
 
-                            /* Set centerXY to the actual center of the polygon
-                                  Translate upper left vertex to the center 
-                            */
-                            if(j==0){
-                              console.log("CenterX: "+centerX + " ; CenterY: "+ centerY);
-                              console.log("V1X: "+point.x + " ; V2Y: "+ point.y);
+                          //console.log(centerX/sizeX*1280, centerY/sizeY*720)
+                            for(j in obj.points[0]){
+                              point = obj.points[0][j];
+
+                              /* Set centerXY to the actual center of the polygon
+                                    Translate upper left vertex to the center 
+                              */
+                              if(j==0){
+                                console.log("CenterX: "+centerX + " ; CenterY: "+ centerY);
+                                console.log("V1X: "+point.x + " ; V2Y: "+ point.y);
+                                
+                                centerX = centerX +  Math.abs(point.x);
+                                centerY = centerY +  Math.abs(point.y);
+
+                                console.log("New CenterX: "+centerX / sizeX *1280 + " ; CenterY: "+ centerY / sizeY *720);
+                              }
                               
-                              centerX = centerX +  Math.abs(point.x);
-                              centerY = centerY +  Math.abs(point.y);
+                                x = (parseFloat(point.x) + centerX)  / sizeX * 1280;
+                                y = (parseFloat(point.y) + centerY) / sizeY  * 720;          
 
-                              console.log("New CenterX: "+centerX / sizeX *1280 + " ; CenterY: "+ centerY / sizeY *720);
+                                row += "<td>["+x + " , " + y+"]</td>";
+                                
+                                space[j] = [x,y] ;
                             }
+                            row += "</tr>";
+                            table.innerHTML += row;
+                            vertex.push(space)
+                            console.log(vertex); 
+                        }  
                             
-                              x = (parseFloat(point.x) + centerX)  / sizeX * 1280;
-                              y = (parseFloat(point.y) + centerY) / sizeY  * 720;          
-
-                              row += "<td>["+x + " , " + y+"]</td>";
-                              
-                              space[j] = [x,y] ;
-                          }
-                          row += "</tr>";
-                          table.innerHTML += row;
-                          vertex.push(space)
-                          console.log(vertex); 
-                      }  
-                           
+                  }
                 }
-            } //buildTable
+              } //buildTable
 
             var drawerPlugins = [
                 'BackgroundImage',
@@ -235,18 +236,25 @@ Setup
 
                 }, canvasWidth, canvasHeight);
                 $('#canvas-editor').append(drawer.getHtml());
-                
-            
+
                 drawer.onInsert();
                 drawer.api.startEditing();
+
+                //Try to load existing canvas setup
+                let canvas = JSON.parse("{{canvas|escapejs}}"); 
+                console.log(canvas);   
+                if(canvas != ''){
+                  drawer.loadCanvas(canvas);
+                }
+                drawer.syncCanvasData();
+
                 
             });
 
 
             function saveCanvas(){
-                
                 console.log(JSON.parse(localStorage.getItem('canvasData')));
-                data = {vertex : JSON.stringify(vertex), csrfmiddlewaretoken: '{{ csrf_token }}', id: '{{form.instance.id}}'};
+                data = {vertex : JSON.stringify(vertex), canvas: JSON.stringify(drawer.getCanvasData()), csrfmiddlewaretoken: '{{ csrf_token }}', id: '{{form.instance.id}}'};
                 console.log(data);
                 post("", data);
                 console.log("saveCanvas");
