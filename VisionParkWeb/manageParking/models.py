@@ -15,6 +15,7 @@ class Parking(models.Model):
     lat = models.DecimalField(max_digits=9, decimal_places=6)
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
+    canvas = models.JSONField(null=True)
 
     def __str__(self):
         return self.name + " - " + str(self.user)

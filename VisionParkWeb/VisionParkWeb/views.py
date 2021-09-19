@@ -133,9 +133,7 @@ def setup_parking(request, id=None):
     # Once submitted the form
     if request.method=="POST": 
 
-        hidden_id = request.POST.get('hidden_id')
         vertex = request.POST.get('vertex')
-        print("HIDDEN< ", hidden_id)
         print("ID< ", id)
 
         # Setup existing parking
@@ -144,9 +142,15 @@ def setup_parking(request, id=None):
             if parking.user != request.user:
                 return HttpResponseForbidden()
         
-            form = SetupParkingForm(None, instance=parking)
+            # Save canvas config to parking entry in DB
+            parking.canvas = request.POST.get('canvas')
+            parking.save()
+            
+            # Remove previous spaces from the parking
+            Space.objects.filter(parking=parking).delete()
+
+            # Add the just created spaces from the canvas
             vertex =  json.loads(vertex) # Parse the stringyfied JSON
-            print("JSON vertex: ",vertex)
             
             new_spaces = []
             for i,v in enumerate(vertex): #For each set of vertex of the spaces setup
@@ -159,12 +163,6 @@ def setup_parking(request, id=None):
                 )
                 new_spaces.append(space)
             Space.objects.bulk_create(new_spaces)
-            
-            # # Add the user and commit the object to database
-            # stock = form.save(commit=False)
-            # print("stock",stock)
-            # stock.user = request.user
-            # stock.save()
 
             parkings = Parking.objects.filter(user=request.user)
             return redirect('/manage/myparkings', {'parkings' : parkings, 'added_ok': True})
@@ -183,9 +181,10 @@ def setup_parking(request, id=None):
             if parking.user != request.user:
                 return HttpResponseForbidden()
 
-            spaces = get_list_or_404(Space, parking=parking)       
-            return render(request, "manage/setup.html", {'spaces' : spaces})
-            
+            # spaces = get_list_or_404(Space, parking=parking)      
+            canvas = parking.canvas
+            return render(request, "manage/setup.html", {'canvas' : canvas})
+
         # Creating new parking
         else:
             parkings = Parking.objects.filter(user=request.user)
