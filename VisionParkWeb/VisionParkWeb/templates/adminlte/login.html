@@ -50,7 +50,7 @@ please login with an account that has access.</p>
                         {% if message %}
                             <p class="login-box-msg" style="color: red;">{{ message }}</p>
                         {% endif %}
-                        <div class="input-group mb-3">
+                        <div class="input-group mb-3" id="login-row1">
                             <td>{{ form.username.label_tag }}</td>
                             <td>{{ form.username }} </td>
                           <div class="input-group-append">
@@ -59,7 +59,7 @@ please login with an account that has access.</p>
                             </div>
                           </div>
                         </div>
-                        <div class="input-group mb-3 label-login">
+                        <div class="input-group mb-3 label-login" id="login-row2">
                             <td>{{ form.password.label_tag }}</td>
                             <td>{{ form.password }}</td>
                           <div class="input-group-append">

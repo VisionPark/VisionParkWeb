@@ -1,0 +1,12 @@
+div > .label-login {
+
+    width: 25%;    
+}
+
+.card{
+    width: 23rem;
+}
+
+#login-row1,#login-row2 {
+    display: block ruby !important;
+}
