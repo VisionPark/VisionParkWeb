@@ -1,0 +1,185 @@
+{% extends 'adminlte/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'Parkings' %}{% endblock %}
+
+{% block extra_head %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="/static/css/myparkings.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.25/r-2.2.9/rr-1.2.8/datatables.min.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+  integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+  crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+  integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+  crossorigin="">
+</script>
+
+<style>
+  #map {
+    height: 600px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="col-9 d-flex align-items-stretch" style="margin: auto;">
+  <div class="card bg-light col-9" style="padding-top: 10px;">
+    <div class="content">
+
+      <h4 class="title" style="text-align: center;">{% trans 'All parkings in Huelva' %}</h4>
+      <div id="map"></div>
+    </div>
+  </div>
+
+  <div class="card bg-light col-3" style="padding-top: 10px;">
+    <div class="card-header border-bottom-0">
+      Parking info
+      <hr>
+    </div>
+    
+
+    <div class="card-body" style="padding-top: 20%;">
+      <!-- Info Boxes Style 2 -->
+      <div class="info-box mb-3 bg-warning">
+        <span class="info-box-icon"><i class="fas fa-tag"></i></span>
+
+        <div class="info-box-content">
+          <span class="info-box-text">Inventory</span>
+          <span class="info-box-number">5,200</span>
+        </div>
+        <!-- /.info-box-content -->
+      </div>
+      <!-- /.info-box -->
+      <div class="info-box mb-3 bg-success">
+        <span class="info-box-icon"><i class="far fa-heart"></i></span>
+
+        <div class="info-box-content">
+          <span class="info-box-text">Mentions</span>
+          <span class="info-box-number">92,050</span>
+        </div>
+        <!-- /.info-box-content -->
+      </div>
+      <!-- /.info-box -->
+      <div class="info-box mb-3 bg-danger">
+        <span class="info-box-icon"><i class="fas fa-cloud-download-alt"></i></span>
+
+        <div class="info-box-content">
+          <span class="info-box-text">Downloads</span>
+          <span class="info-box-number">114,381</span>
+        </div>
+        <!-- /.info-box-content -->
+      </div>
+      <!-- /.info-box -->
+      <div class="info-box mb-3 bg-info">
+        <span class="info-box-icon"><i class="far fa-comment"></i></span>
+
+        <div class="info-box-content">
+          <span class="info-box-text">Direct Messages</span>
+          <span class="info-box-number">163,921</span>
+        </div>
+        <!-- /.info-box-content -->
+      </div>
+      <!-- /.info-box -->
+    </div>
+
+  </div>
+</div>
+
+<div class="col-9 d-table" style="margin: auto;">
+  <div class="card card-primary">
+
+    <div class="card-body">
+      <table id="parkings-table" class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th scope="col">{% trans 'ID' %}</th>
+            <th scope="col">{% trans 'Name' %}</th>
+            <th scope="col">{% trans 'Address' %}</th>
+            <th scope="col">{% trans 'Postcode' %}</th>
+            <th scope="col">{% trans 'Date Created' %}</th>
+            <th scope="col">{% trans 'Date Modified' %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for parking in parkings %}
+          <tr onclick="onClickRow({{parking.id}})">
+            <td>{{ parking.id }}</td>
+            <td>{{ parking.name }}</td>
+            <td>{{ parking.address }}</td>
+            <td>{{ parking.postcode }}</td>
+            <td scope="row">{{ parking.date_created }}</td>
+            <td scope="row">{{ parking.date_modified }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/r-2.2.9/rr-1.2.8/datatables.min.js"></script>
+<script>
+// https://datatables.net/reference/option/
+$(function () {
+  $('#parkings-table').DataTable(
+   {
+        "order": [[ 5, "desc" ]],
+        "paging": false,
+        "searching": true,
+        "stateSave": false,
+        "orderClasses": true,
+        "autoWidth": true,
+        "pagingType": "numbers",
+        "columnDefs": [ {
+            "targets"  : 'no-sort',
+            "orderable": false,
+            }]
+     });
+  });
+</script>
+
+<script>
+  function onClickRow(parkingId) {
+    alert("Clicked parking id " + parkingId);
+  }
+</script>
+
+<script>
+  var map = L.map('map').
+  setView([37.2655892, -6.9362852], 14); //Huelva
+  var layer = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'VisionPark - Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>'
+  }).addTo(map);
+  L.control.scale().addTo(map);
+
+  var offset = map.getSize().x * 0.15;
+  // Then move the map
+  map.panBy(new L.Point(-offset, 0), {
+    animate: false
+  });
+
+  //var layerGroup = L.layerGroup().addTo(map);
+  var markersLayer = L.featureGroup().addTo(map);
+
+  function onMapClick(e) {
+
+  }
+
+  function setParkingAddress(json) {
+    console.log(json)
+
+    document.getElementById("inParkingAddress").value = json.display_name.split(",", 3)
+    document.getElementById("inParkingPostCode").value = json.address.postcode
+
+  }
+
+  map.on('click', onMapClick);
+</script>
+
+
+{% endblock %}

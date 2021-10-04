@@ -13,6 +13,7 @@ from manageParking.models import Parking, Space
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, get_list_or_404, redirect, render, reverse
 import json
+from django.http import JsonResponse
 def home(request):
 
     return render(request, 'home.html')
@@ -21,6 +22,12 @@ def home(request):
 def about(request):
 
     return render(request, 'about.html')
+
+def parkings(request):
+    parkings = Parking.objects.all()
+    parkingsJson =  list( parkings.values('id') )
+
+    return render(request, 'parkings.html', {'parkings': parkings, 'parkingsJson': parkingsJson})
 
 
 def home2(request):
