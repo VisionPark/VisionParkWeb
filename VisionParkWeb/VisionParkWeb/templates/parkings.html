@@ -5,7 +5,8 @@
 {% block extra_head %}
 <!-- DataTables CSS -->
 <link rel="stylesheet" type="text/css" href="/static/css/myparkings.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.25/r-2.2.9/rr-1.2.8/datatables.min.css"/>
+<link rel="stylesheet" type="text/css"
+  href="https://cdn.datatables.net/v/bs4/dt-1.10.25/r-2.2.9/rr-1.2.8/datatables.min.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
   crossorigin="" />
@@ -22,6 +23,7 @@
 {% endblock %}
 
 {% block content %}
+{% csrf_token %}
 <div class="col-9 d-flex align-items-stretch" style="margin: auto;">
   <div class="card bg-light col-9" style="padding-top: 10px;">
     <div class="content">
@@ -33,10 +35,16 @@
 
   <div class="card bg-light col-3" style="padding-top: 10px;">
     <div class="card-header border-bottom-0">
-      Parking info
+      {% if selectedParking %}
+      <h2>{{selectedParking.name}} </h2>
+      {{selectedParking.address}}<br>
+      {{selectedParking.postcode}}
+      {% else %}
+      All parkings Info
+      {% endif %}
       <hr>
     </div>
-    
+
 
     <div class="card-body" style="padding-top: 20%;">
       <!-- Info Boxes Style 2 -->
@@ -114,7 +122,7 @@
         </tbody>
       </table>
 
-      
+
 
     </div>
   </div>
@@ -122,34 +130,39 @@
 {% endblock %}
 
 {% block extra_js %}
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/r-2.2.9/rr-1.2.8/datatables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/r-2.2.9/rr-1.2.8/datatables.min.js">
+ var csrftoken = '{{ csrf_token }}';
+</script>
 <script>
-// https://datatables.net/reference/option/
-$(function () {
-  $('#parkings-table').DataTable(
-   {
-        "order": [[ 5, "desc" ]],
-        "paging": false,
-        "searching": true,
-        "stateSave": false,
-        "orderClasses": true,
-        "autoWidth": true,
-        "pagingType": "numbers",
-        "columnDefs": [ {
-            "targets"  : 'no-sort',
-            "orderable": false,
-            }]
-     });
+  // https://datatables.net/reference/option/
+  $(function () {
+    $('#parkings-table').DataTable({
+      "order": [
+        [5, "desc"]
+      ],
+      "paging": false,
+      "searching": true,
+      "stateSave": false,
+      "orderClasses": true,
+      "autoWidth": true,
+      "pagingType": "numbers",
+      "columnDefs": [{
+        "targets": 'no-sort',
+        "orderable": false,
+      }]
+    });
   });
 </script>
 
 <script>
   function onClickRow(parkingId) {
-    alert("Clicked parking id " + parkingId);
+    var zoom = 15;
+    post("", {'idParkingSelected' : parkingId, 'zoom' : zoom, csrfmiddlewaretoken: '{{ csrf_token }}'});
   }
 </script>
 
 <script>
+  // Map setup
   var map = L.map('map').
   setView([37.2655892, -6.9362852], 14); //Huelva
   var layer = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -166,19 +179,71 @@ $(function () {
   //var layerGroup = L.layerGroup().addTo(map);
   var markersLayer = L.featureGroup().addTo(map);
 
+  // Get the parkings parsed to json
+  var parkingsJson = {{parkingsJson | safe}}
+
+  // Add parkings markers to the map
+  for (parking in parkingsJson) {
+    addMarker(parkingsJson[parking].lat, parkingsJson[parking].lon, parkingsJson[parking].id);
+  }
+
+  {% if selectedParking %}
+    map.setView([{{selectedParking.lat}}, {{selectedParking.lon}}], {{zoom}});
+  {% endif %}
+
+//end map setup
+
+
+
   function onMapClick(e) {
 
   }
 
-  function setParkingAddress(json) {
-    console.log(json)
+  function addMarker(lat, lon, id) {
+    //layerGroup.clearLayers();
 
-    document.getElementById("inParkingAddress").value = json.display_name.split(",", 3)
-    document.getElementById("inParkingPostCode").value = json.address.postcode
+    var marker = L.marker([lat, lon]).addTo(markersLayer).on("click",onMarkerClick.bind(null,id));
+    // map.setView([lat, lon],16);   
+  }
+
+  function onMarkerClick(id, event) {
+
+    var zoom = map.getZoom();
+
+    post("", {'idParkingSelected' : id, 'zoom' : zoom, csrfmiddlewaretoken: '{{ csrf_token }}'});
 
   }
 
   map.on('click', onMapClick);
+
+/** https://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit
+  * sends a request to the specified url from a form. this will change the window location.
+  * @param {string} path the path to send the post request to
+  * @param {object} params the parameters to add to the url
+  * @param {string} [method=post] the method to use on the form
+  */
+
+  function post(path, params, method='post') {
+    const form = document.createElement('form');
+    form.method = method;
+    form.action = path;
+
+    for (const key in params) {
+      if (params.hasOwnProperty(key)) {
+        const hiddenField = document.createElement('input');
+        hiddenField.type = 'hidden';
+        hiddenField.name = key;
+        hiddenField.value = params[key];
+
+        form.appendChild(hiddenField);
+      }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+
 </script>
 
 

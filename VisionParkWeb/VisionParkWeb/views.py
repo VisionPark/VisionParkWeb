@@ -12,8 +12,10 @@ from VisionParkWeb.forms import SetupParkingForm
 from manageParking.models import Parking, Space
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, get_list_or_404, redirect, render, reverse
-import json
-from django.http import JsonResponse
+import simplejson as json
+
+
+
 def home(request):
 
     return render(request, 'home.html')
@@ -25,7 +27,12 @@ def about(request):
 
 def parkings(request):
     parkings = Parking.objects.all()
-    parkingsJson =  list( parkings.values('id') )
+    parkingsJson =  json.dumps(list( parkings.values('id', 'lat', 'lon')))
+
+    if request.method=="POST":
+        selectedParking = Parking.objects.get(id=request.POST.get('idParkingSelected'))
+        zoom = request.POST.get('zoom')
+        return render(request, 'parkings.html', {'parkings': parkings, 'parkingsJson':parkingsJson, 'selectedParking':selectedParking, 'zoom':zoom})
 
     return render(request, 'parkings.html', {'parkings': parkings, 'parkingsJson': parkingsJson})
 
