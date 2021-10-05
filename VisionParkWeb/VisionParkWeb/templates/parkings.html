@@ -5,15 +5,10 @@
 {% block extra_head %}
 <!-- DataTables CSS -->
 <link rel="stylesheet" type="text/css" href="/static/css/myparkings.css">
-<link rel="stylesheet" type="text/css"
-  href="https://cdn.datatables.net/v/bs4/dt-1.10.25/r-2.2.9/rr-1.2.8/datatables.min.css" />
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
   crossorigin="" />
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-  integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-  crossorigin="">
-</script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/zf/dt-1.11.3/r-2.2.9/sl-1.3.3/datatables.min.css"/>
 
 <style>
   #map {
@@ -27,8 +22,6 @@
 <div class="col-9 d-flex align-items-stretch" style="margin: auto;">
   <div class="card bg-light col-9" style="padding-top: 10px;">
     <div class="content">
-
-      <h4 class="title" style="text-align: center;">{% trans 'All parkings in Huelva' %}</h4>
       <div id="map"></div>
     </div>
   </div>
@@ -110,7 +103,7 @@
         </thead>
         <tbody>
           {% for parking in parkings %}
-          <tr onclick="onClickRow({{parking.id}})">
+          <tr id="row-{{parking.id}}" onclick="onClickRow({{parking.id}})">
             <td>{{ parking.id }}</td>
             <td>{{ parking.name }}</td>
             <td>{{ parking.address }}</td>
@@ -130,28 +123,40 @@
 {% endblock %}
 
 {% block extra_js %}
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/r-2.2.9/rr-1.2.8/datatables.min.js">
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+  integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+  crossorigin="">
+</script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/zf/dt-1.11.3/r-2.2.9/sl-1.3.3/datatables.min.js">
+
  var csrftoken = '{{ csrf_token }}';
 </script>
 <script>
   // https://datatables.net/reference/option/
-  $(function () {
-    $('#parkings-table').DataTable({
-      "order": [
-        [5, "desc"]
-      ],
-      "paging": false,
-      "searching": true,
-      "stateSave": false,
-      "orderClasses": true,
-      "autoWidth": true,
-      "pagingType": "numbers",
-      "columnDefs": [{
-        "targets": 'no-sort',
-        "orderable": false,
-      }]
-    });
+  $(document).ready(function() {
+    var table = $('#parkings-table').DataTable({
+        "order": [
+          [5, "desc"]],
+        "paging": false,
+        "searching": true,
+        "stateSave": false,
+        "orderClasses": true,
+        "autoWidth": true,
+        "pagingType": "numbers",
+        "columnDefs": [{
+          "targets": 'no-sort',
+          "orderable": false,
+        }],
+        select: true
+      });
+    
+    {% if selectedParking %}
+      table.rows("#row-{{selectedParking.id}}").select();
+    {% endif %}
+
   });
+   
+
 </script>
 
 <script>
