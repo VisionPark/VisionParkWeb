@@ -103,7 +103,7 @@
         </thead>
         <tbody>
           {% for parking in parkings %}
-          <tr id="row-{{parking.id}}" onclick="onClickRow({{parking.id}})">
+          <tr id="row-{{parking.id}}">
             <td>{{ parking.id }}</td>
             <td>{{ parking.name }}</td>
             <td>{{ parking.address }}</td>
@@ -154,16 +154,19 @@
       table.rows("#row-{{selectedParking.id}}").select();
     {% endif %}
 
+    $('#parkings-table tbody').on( 'click', 'tr', function () {
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+          var zoom = 15;
+          var parkingId = $(this).attr('id').substring(4);
+          post("", {'idParkingSelected' : parkingId, 'zoom' : zoom, csrfmiddlewaretoken: '{{ csrf_token }}'});
+        }
+    } );
+
   });
    
-
-</script>
-
-<script>
-  function onClickRow(parkingId) {
-    var zoom = 15;
-    post("", {'idParkingSelected' : parkingId, 'zoom' : zoom, csrfmiddlewaretoken: '{{ csrf_token }}'});
-  }
 </script>
 
 <script>
