@@ -26,6 +26,14 @@ class Parking(models.Model):
     @property
     def num_spaces_vacant(self):
         return Space.objects.filter(parking=self, vacant=True).count()
+    
+    @property
+    def num_spaces_not_vacant(self):
+        return Space.objects.filter(parking=self, vacant=False).count()
+    
+    @property
+    def num_spaces_unknown(self):
+        return self.num_spaces - (self.num_spaces_not_vacant + self.num_spaces_vacant)
    
     def __str__(self):
         return f"{self.name} - {self.user}"
