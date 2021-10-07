@@ -1,10 +1,11 @@
 from django.conf import settings
 from django.db import models
-from django.db.models import UniqueConstraint
+from django.db.models import Count, Q
 
 # https://www.youtube.com/watch?v=IEHOMF2Pukg&list=PLU8oAlHdN5BmfvwxFO7HdPciOCmmYneAB&index=12
 # https://stackoverflow.com/questions/28712848/composite-primary-key-in-django
 # https://stackoverflow.com/questions/34305805/django-foreignkeyuser-in-models
+# https://docs.djangoproject.com/en/3.1/topics/db/models/#model-methods
 
 class Parking(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
@@ -17,8 +18,17 @@ class Parking(models.Model):
     date_modified = models.DateTimeField(auto_now=True)
     canvas = models.JSONField(null=True)
 
+    # Calculated fields
+    @property
+    def num_spaces(self):
+        return self.space_set.count()
+    
+    @property
+    def num_spaces_vacant(self):
+        return Space.objects.filter(parking=self, vacant=True).count()
+   
     def __str__(self):
-        return self.name + " - " + str(self.user)
+        return f"{self.name} - {self.user}"
 
 
 class Space(models.Model):

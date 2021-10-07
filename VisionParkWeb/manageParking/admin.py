@@ -8,7 +8,7 @@ class SpaceAdmin(admin.ModelAdmin):
     readonly_fields = ('date_modified', 'date_created',)
 
 class ParkingAdmin(admin.ModelAdmin):
-    readonly_fields = ('date_modified', 'date_created',)
+    readonly_fields = ('date_modified', 'date_created','num_spaces', 'num_spaces_vacant')
 
 admin.site.register(Parking, ParkingAdmin)
 admin.site.register(Space, SpaceAdmin)
