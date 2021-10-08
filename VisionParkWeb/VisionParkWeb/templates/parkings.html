@@ -4,7 +4,7 @@
 
 {% block extra_head %}
 <!-- DataTables CSS -->
-<link rel="stylesheet" type="text/css" href="/static/css/myparkings.css">
+<link rel="stylesheet" type="text/css" href="/static/css/parkings.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
   crossorigin="" />
@@ -28,40 +28,49 @@
 
   <div class="card bg-light col-3" style="padding-top: 10px;">
     <div class="card-header border-bottom-0">
+      <div class="card-tools">
+        <button type="button" class="btn btn-tool" id="btnClose" onClick="reloadPage()"><i class="fas fa-times"></i>
+        </button>
+      </div>
+
       {% if selectedParking %}
-      <h2>{{selectedParking.name}} </h2>
-      {{selectedParking.address}}<br>
-      {{selectedParking.postcode}}
-      {% else %}
-      All parkings Info
+        <h2>{{selectedParking.name}} </h2>
+        {{selectedParking.address}}<br>
+        {{selectedParking.postcode}}
+        {% else %}
+        <h2>All parkings Stats</h2>
       {% endif %}
       <hr>
+
     </div>
 
+    <div class="card-body">
 
-    <div class="card-body" style="padding-top: 20%;">
-      
-        
-          <div class="chart-responsive">
-            <canvas id="pieChart"></canvas>
+
+      <div class="info-box">
+        <span class="info-box-icon bg-info"><i class="fas fa-parking"></i></span>
+
+        <div class="info-box-content">
+          <span class="info-box-number">Vacant: <b>{{num_spaces_vacant}}</b></span>
+          <span class="info-box-number">Not vacant: <b>{{num_spaces_not_vacant}}</b></span>
+          <span class="info-box-number">Unknown: <b>{{num_spaces_unknown}}</b></span>
+          <span class="info-box-number">Total: <b>{{num_spaces}}</b></span>
+
+          <div class="progress">
+            <div class="progress-bar bg-danger" role="progressbar" aria-valuenow="{{per_occupied}}" aria-valuemin="0"
+                  aria-valuemax="100" style="width: {{per_occupied}}%">
+              <span class="sr-only">{{per_occupied}}% spaces occupied</span>
+            </div>
           </div>
-          <!-- ./chart-responsive -->
+        </div>
 
-        <!-- /.col -->
-        {% comment %} <div class="col-md-4">
-          <ul class="chart-legend clearfix">
-            <li><i class="far fa-circle text-danger"></i> Chrome</li>
-            <li><i class="far fa-circle text-success"></i> IE</li>
-            <li><i class="far fa-circle text-warning"></i> FireFox</li>
-            <li><i class="far fa-circle text-info"></i> Safari</li>
-            <li><i class="far fa-circle text-primary"></i> Opera</li>
-            <li><i class="far fa-circle text-secondary"></i> Navigator</li>
-          </ul>
-        </div> {% endcomment %}
-        <!-- /.col -->
       </div>
-      <!-- /.row -->
+        
+      <div class="chart-responsive">
+        <canvas id="pieChart"></canvas>
+      </div>
 
+    </div>
     <!-- /.card-body -->
 
   </div>
@@ -113,6 +122,10 @@
  var csrftoken = '{{ csrf_token }}';
 </script>
 <script>
+  function reloadPage(){
+      post("", {csrfmiddlewaretoken: '{{ csrf_token }}'});
+  }
+  
   // https://datatables.net/reference/option/
   $(document).ready(function() {
     var table = $('#parkings-table').DataTable({
@@ -135,9 +148,10 @@
       table.rows("#row-{{selectedParking.id}}").select();
     {% endif %}
 
+    // OnClick table row
     $('#parkings-table tbody').on( 'click', 'tr', function () {
         if ( $(this).hasClass('selected') ) {
-            $(this).removeClass('selected');
+            reloadPage();
         }
         else {
           var zoom = 15;
@@ -211,8 +225,6 @@
 
 //end map setup
 
-
-
   function onMapClick(e) {
 
   }
@@ -237,12 +249,13 @@
 /*
  * Graphs
   */
-{% if selectedParking %}
-var num_spaces = {{selectedParking.num_spaces}};
-var num_spaces_vacant = {{selectedParking.num_spaces_vacant}};
-var num_spaces_not_vacant = {{selectedParking.num_spaces_not_vacant}};
-var num_spaces_unknown = {{selectedParking.num_spaces_unknown}};
 
+var num_spaces = {{num_spaces}};
+var num_spaces_vacant = {{num_spaces_vacant}};
+var num_spaces_not_vacant = {{num_spaces_not_vacant}};
+var num_spaces_unknown = {{num_spaces_unknown}};
+
+{% if num_spaces > 0 %}
 const config = {
   type: 'doughnut',
   data: {
@@ -279,9 +292,9 @@ window.onload = function() {
       window.myPie = new Chart(ctx, config);
     };
 
+
+
 {% endif %}
-
-
 </script>
 
 

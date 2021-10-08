@@ -131,3 +131,4 @@ dmypy.json
 secret_settings.py
 VisionParkWeb/VisionParkWeb/change_env.bat
 VisionParkWeb/change_env.bat
+.vscode/settings.json

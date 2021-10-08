@@ -14,12 +14,9 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, get_list_or_404, redirect, render, reverse
 import simplejson as json
 
-
-
 def home(request):
 
     return render(request, 'home.html')
-
 
 def about(request):
 
@@ -28,58 +25,46 @@ def about(request):
 def parkings(request):
     parkings = Parking.objects.all()
     parkingsJson =  json.dumps(list( parkings.values('id', 'lat', 'lon')))
-
-    if request.method=="POST":
-        selectedParking = Parking.objects.get(id=request.POST.get('idParkingSelected'))
-        zoom = request.POST.get('zoom')
-        return render(request, 'parkings.html', {'parkings': parkings, 'parkingsJson':parkingsJson, 'selectedParking':selectedParking, 'zoom':zoom})
-
-    return render(request, 'parkings.html', {'parkings': parkings, 'parkingsJson': parkingsJson})
-
-
-def home2(request):
-
-    nombre = "Victor"
-    apellido = "RN"
-
-    #doc_externo = open('E:/OneDrive - UNIVERSIDAD DE HUELVA/TFG/VisionParkWeb-main/VisionParkWeb/VisionParkWeb/VisionParkWeb/templates/plantillaPrueba.html')
-    #template = Template(doc_externo.read())
-    #doc_externo.close()
-
-    #doc_externo = get_template('plantillaPrueba.html')
-
-
-    ctx = {"nombre_persona" : nombre, 
-        "apellido_persona" : apellido, 
-        "year":datetime.datetime.now().year, 
-        "temas":["hola", "buenas", "tardes", "crack"]}
-
-    #documento = doc_externo.render(ctx)
-
-    #fecha_actual = datetime.datetime.now()
-
-    return render(request, 'plantillaPrueba.html', ctx)
-
-def calculaEdad(request, edad, year):
-
-    periodo = year - datetime.datetime.now().year
-    edadFutura = edad + periodo
-
     
-    documento = f"""<html><body>
-    <h2>En el año {year} tendrás {edadFutura} años</h2>
+    # Row selected  
+    if request.method=="POST" and request.POST.get('idParkingSelected'):
+        selectedParking = Parking.objects.get(id=request.POST.get('idParkingSelected'))
+        
+        zoom = request.POST.get('zoom')
+        if selectedParking.num_spaces > 0:
+            per_occupied = round(selectedParking.num_spaces_not_vacant/selectedParking.num_spaces *100)
+        else:
+            per_occupied = 0
+        
+        num_spaces = selectedParking.num_spaces
+        num_spaces_vacant = selectedParking.num_spaces_vacant
+        num_spaces_not_vacant = selectedParking.num_spaces_not_vacant
+        num_spaces_unknown = selectedParking.num_spaces_unknown
 
-    </body></html>
-    """
+        return render(request, 'parkings.html', {'parkings': parkings, 'parkingsJson':parkingsJson,
+            'selectedParking':selectedParking, 'zoom':zoom, 'per_occupied':per_occupied,
+            'num_spaces':num_spaces, 'num_spaces_vacant':num_spaces_vacant,
+            'num_spaces_not_vacant':num_spaces_not_vacant, 'num_spaces_unknown':num_spaces_unknown
+            })
+            
+    
+    # First time or Close card button pressed
+    # All parkings stats
+    all_parkings = Parking.objects.all()
+    num_spaces = len(all_parkings)
+    num_spaces_vacant = 0
+    num_spaces_not_vacant = 0
+    num_spaces_unknown = 0
 
-    return HttpResponse(documento)
+    for p in all_parkings:
+        num_spaces_vacant += p.num_spaces_vacant
+        num_spaces_not_vacant += p.num_spaces_not_vacant
+        num_spaces_unknown += p.num_spaces_unknown
 
-
-def hereda(request):
-
-    fecha = datetime.datetime.now()
-
-    return render(request, 'hereda.html', {"dame_fecha": fecha})
+    return render(request, 'parkings.html', 
+        {'parkings': parkings, 'parkingsJson': parkingsJson,
+            'num_spaces':num_spaces, 'num_spaces_vacant':num_spaces_vacant,
+            'num_spaces_not_vacant':num_spaces_not_vacant, 'num_spaces_unknown':num_spaces_unknown})
 
 @login_required
 def add_parking(request, id=None):
@@ -204,7 +189,6 @@ def setup_parking(request, id=None):
             parkings = Parking.objects.filter(user=request.user)
             return redirect('/manage/myparkings', {'parkings' : parkings, 'setup_ok': False})
         
-
 @login_required   
 def my_parkings(request):
   # https://stackoverflow.com/questions/59408167/list-of-current-user-objects-in-django-listview

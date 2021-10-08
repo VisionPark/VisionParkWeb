@@ -1,0 +1,41 @@
+table thead {
+    background-color:  #343a40;
+    color: white;
+  }
+   
+.table-container {
+  margin: auto;
+}
+
+div#card-tools {
+
+  margin-right: 0.05rem;
+
+}
+
+div.delete-parking{
+  display: none;
+  position: absolute;
+  width: 50%;
+  margin: 5% auto; /* Will not center vertically and won't work in IE6/7. */
+  left: 0;
+  right: 0;
+  z-index: 1;
+}
+
+span.info-box-number{
+  font-weight: normal !important;
+  align-self: end;
+  display: inline-block;
+  height: 1rem; 
+
+}
+
+div.progress{
+  margin-top: 1rem !important;
+  height: 1rem !important; 
+}
+
+div.chart-responsive{
+  padding-top: 2rem;
+}
