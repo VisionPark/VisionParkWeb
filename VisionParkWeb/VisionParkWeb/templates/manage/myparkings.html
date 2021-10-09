@@ -1,14 +1,13 @@
 {% extends 'adminlte/base.html' %}
 {% load i18n static %}
+{% block title %}{% trans 'My Parkings' %}{% endblock %}
 {% block extra_head %}
 <!-- <link rel="stylesheet" type="text/css" href="{% static 'admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.css' %}"> -->
 
 <!-- DataTables CSS -->
 <link rel="stylesheet" type="text/css" href="{% static 'css/myparkings.css' %}">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.25/r-2.2.9/rr-1.2.8/datatables.min.css"/>
-
 {% endblock %}
-
 
 {% block content %}
 
@@ -142,7 +141,6 @@ $(function () {
             "targets"  : 'no-sort',
             "orderable": false,
             }]
-       
      });
   });
   

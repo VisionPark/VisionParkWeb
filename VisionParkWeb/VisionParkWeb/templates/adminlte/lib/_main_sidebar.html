@@ -1,0 +1,94 @@
+{% load adminlte_helpers %}
+{% load i18n %}
+{%load static %}
+<!-- Left side column. contains the sidebar -->
+<aside class="main-sidebar sidebar-dark-primary  elevation-4">
+     <!-- Brand Logo -->
+    {% block logo %}
+        <a href="/" class="brand-link">
+            <img src="{%static 'visionparkLogo-med.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+            {% block logo_text %}<span class="brand-text font-weight-light">VisionPark </span>{% endblock %}
+        </a>
+    {% endblock %}
+    <!-- sidebar: style can be found in sidebar.less -->
+    <div class="sidebar">
+        <!-- Sidebar user panel -->
+        {% block user_panel %}
+        <!-- Sidebar user panel (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <img src="{% avatar_url size=90 %}" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+        {% if request.user.is_authenticated %}
+          <a href="#" class="d-block">{% firstof request.user.get_full_name request.user.username %}</a>
+        
+        {% else %}
+        <a href="{% url 'login'%}?next={{request.path}}" class="d-block">{% trans 'Sign In' %}</a>
+        {% endif %}
+        </div>
+      </div>
+        {% endblock %}
+
+        {% block form %}{% endblock %}
+
+        <!-- sidebar menu: : style can be found in sidebar.less -->
+        {% block nav_links_ul %}
+        <!-- ONLY FOR AUTHENTICATED USERS -->
+        {% if user.is_authenticated %}
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            {% block nav_links_outer %}
+            <li class="nav-header">{{request.path}}</li>
+
+            {% block nav_links %}
+                <li class="nav-item">
+                    <a href="/" class="nav-link{% if request.path == '/' %} active{% endif %}">
+                        <i class="nav-icon fas fa-tachometer-alt"></i> 
+                        <p>{% trans 'Home' %}</p>
+                    </a>
+                </li>
+                
+                <li class="nav-item has-tree-view {% if 'manage' in request.path %} menu-open {% endif %}">
+                    <a href="#" class="nav-link{% if 'manage' in request.path %} active{% endif %}">
+                        <i class="nav-icon fas fa-object-group"></i> <p>{% trans 'Manage Parkings' %}</p>
+                        <p><i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview ">
+                        <li class="nav-item">
+                                <a href="/manage/add" class="nav-link{% if request.path == '/manage/add' %} active{% endif %}">
+                                    <i class="nav-icon fas fa-plus"></i> {% trans 'Add new' %}
+                                </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/manage/myparkings" class="nav-link{% if request.path == '/manage/myparkings' %} active{% endif %}">
+                                <i class="nav-icon fas fa-user"></i> {% trans 'My Parkings' %}
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item">
+                    <a href="/admin" class="nav-link{% if request.resolver_match.url_name == 'manage/settings' %}active{% endif %}">
+                        <i class="nav-icon fas fa-cog"></i> 
+                        <p>{% trans 'Settings' %}</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{% url 'logout'%}" class="nav-link">
+                        <i class="nav-icon fas fa-sign-out-alt"></i> 
+                        <p>{% trans 'Sign Out' %}</p>
+                    </a>
+                </li>
+            {% endblock nav_links %}
+            {% endblock nav_links_outer %}
+            </ul>
+        </nav>
+        {% endif %}
+        <!--F.ONLY FOR AUTHENTICATED USERS -->
+        {% endblock nav_links_ul %}
+    </div>
+    <!-- /.sidebar -->
+</aside>
