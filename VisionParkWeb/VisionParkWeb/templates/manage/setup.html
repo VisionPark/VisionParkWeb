@@ -75,22 +75,21 @@ Setup
 
                     <div id="canvas-editor" style="margin-right: auto;"></div>
 
-                    <div class="col-9" style="margin-top: 3%; margin-left: auto; margin-right: auto;">
-                  <div class="col-12">
+                    <div class="col-10" style="margin-top: 3%; margin-left: auto; margin-right: auto;">
+                  
                     <button style="display: block ruby;"
                       class="btn btn-success float-right"
                       onclick="saveCanvas()">
                       {% trans 'Save setup' %}
                       </button>
-                   </div>
+                   
                     <table class="table table-striped">
                           <tr  class="bg-info">
                               <th>V1</th>
                               <th>V2</th>
                               <th>V3</th>
                               <th>V4</th>
-                              <th>V5</th>
-                              <th>V6</th>
+                              <th>Shortname</th>
                           </tr>
                   
                           <tbody id="myTable">
@@ -112,7 +111,6 @@ Setup
   </div>
   <!-- /.content-wrapper -->
 
-{% comment %} TODO: https://stackoverflow.com/questions/9864036/send-javascript-data-to-django-views {% endcomment %}
 {% comment %} https://phpsolved.com/drawerjs-unofficial-documentation/ {% endcomment %}
         <script src="/static/drawerJs/dist/jquery-3.4.1.min.js"></script>
         <script src="/static/drawerJs/dist/drawerJs.standalone.js"></script>
@@ -132,7 +130,7 @@ Setup
 
 
             function buildTable(canvasId, canvasData) {
-                console.log(canvasData);
+                //console.log(canvasData);
                 var data = JSON.parse(canvasData)
                 if(data.backgroundImage){
 
@@ -167,26 +165,27 @@ Setup
                                     Translate upper left vertex to the center 
                               */
                               if(j==0){
-                                console.log("CenterX: "+centerX + " ; CenterY: "+ centerY);
-                                console.log("V1X: "+point.x + " ; V2Y: "+ point.y);
+                                //console.log("CenterX: "+centerX + " ; CenterY: "+ centerY);
+                                //console.log("V1X: "+point.x + " ; V2Y: "+ point.y);
                                 
                                 centerX = centerX +  Math.abs(point.x);
                                 centerY = centerY +  Math.abs(point.y);
 
-                                console.log("New CenterX: "+centerX / sizeX *1280 + " ; CenterY: "+ centerY / sizeY *720);
+                                //console.log("New CenterX: "+centerX / sizeX *1280 + " ; CenterY: "+ centerY / sizeY *720);
                               }
                               
                                 x = (parseFloat(point.x) + centerX)  / sizeX * 1280;
                                 y = (parseFloat(point.y) + centerY) / sizeY  * 720;          
 
-                                row += "<td>["+x + " , " + y+"]</td>";
+                                row += "<td>["+ x.toFixed(2) + " , " + y.toFixed(2)+"]</td>";
                                 
                                 space[j] = [x,y] ;
                             }
+                            row += "<td>A"+i+"</td>";
                             row += "</tr>";
                             table.innerHTML += row;
                             vertex.push(space)
-                            console.log(vertex); 
+                            //console.log(vertex); 
                         }  
                             
                   }
@@ -236,7 +235,7 @@ Setup
 
                 //Try to load existing canvas setup
                 let canvas = JSON.parse("{{canvas|escapejs}}"); 
-                console.log(canvas);   
+                //console.log(canvas);   
                 if(canvas != ''){
                   drawer.loadCanvas(canvas);
                 }
@@ -246,11 +245,11 @@ Setup
 
 
             function saveCanvas(){
-                console.log(JSON.parse(localStorage.getItem('canvasData')));
+                //console.log(JSON.parse(localStorage.getItem('canvasData')));
                 data = {vertex : JSON.stringify(vertex), canvas: JSON.stringify(drawer.getCanvasData()), csrfmiddlewaretoken: '{{ csrf_token }}', id: '{{form.instance.id}}'};
-                console.log(data);
+                //console.log(data);
                 post("", data);
-                console.log("saveCanvas");
+                //console.log("saveCanvas");
             }
 
           /** https://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit
