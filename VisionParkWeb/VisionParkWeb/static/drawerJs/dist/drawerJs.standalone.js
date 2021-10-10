@@ -26464,7 +26464,7 @@ DrawerJs.texts = {
   // polygon plugin
   'Draw a Polygon': 'Draw a Polygon',
   'Stop drawing a polygon': 'Stop drawing a polygon (esc)',
-  'Click to start a new line': 'Click to start a new line',
+  'Click to start a new line': 'Click to start drawing a new space',
 
   // text plugin
   'Draw a text': 'Draw a text',
@@ -48092,8 +48092,8 @@ CloseButton.prototype._onCloseButtonClick = function() {
     this.name = 'Polygon';
     this.btnClass = 'btn-polygon';
     this.faClass = 'fa-star';
-    this.tooltip = drawerInstance.t('Draw a Polygon');
-    this.helpTooltipText = drawerInstance.t('Click to start a new line');
+    this.tooltip = drawerInstance.t('Create a new space');
+    this.helpTooltipText = drawerInstance.t('Click to create a new space');
 
     this.options = options || {};
     this.centeringMode =
@@ -48120,13 +48120,13 @@ CloseButton.prototype._onCloseButtonClick = function() {
     _this.drawerInstance.fCanvas._oldSelectionState = _this.drawerInstance.fCanvas.selection;
     _this.drawerInstance.fCanvas.selection = false;
 
-    _this.$stopButton = $('<button class="stop-polygon">' +
-      _this.drawerInstance.t('Stop drawing a polygon') +
-    '</button>');
-    _this.drawerInstance.$canvasEditContainer.append(_this.$stopButton);
-    _this.$stopButton.click(function () {
-      _this.finishDraw();
-    });
+    // _this.$stopButton = $('<button class="stop-polygon">' +
+    //   _this.drawerInstance.t('Stop drawing a polygon') +
+    // '</button>');
+    // _this.drawerInstance.$canvasEditContainer.append(_this.$stopButton);
+    // _this.$stopButton.click(function () {
+    //   _this.finishDraw();
+    // });
 
     // _this.drawerInstance
     //   .on(_this.drawerInstance.EVENT_KEYDOWN, function (event, originalEvent) {
@@ -48147,9 +48147,12 @@ CloseButton.prototype._onCloseButtonClick = function() {
 
       _this.drawerInstance.fCanvas.renderAll();
 
-      if(mustFinish)
+      // Limit polygon to 4 vertex
+      if(mustFinish){
         _this.finishDraw();
         return false;
+      }
+
     };
 
     if (_this.drawerInstance.touchDevice) {

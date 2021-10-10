@@ -1,6 +1,8 @@
 {% extends 'adminlte/base.html' %}
 
 {% block extra_head %}
+
+<link rel="stylesheet" type="text/css" href="/static/css/parkings.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
   crossorigin=""/>
@@ -9,6 +11,7 @@
   crossorigin=""></script>
 
 <link rel="stylesheet" href="/static/drawerJs/dist/drawerJs.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jq-3.6.0/dt-1.11.3/r-2.2.9/sl-1.3.3/datatables.min.css"/>
 <style>
     #canvas-editor {
         margin-top: 50px;
@@ -51,237 +54,275 @@ Setup
     <!-- Main content -->
     <section class="content" style="margin:auto">
      {% csrf_token %}
-        <div class="row">
-          <div class="col-md-12">
-            <div class="card card-primary">
-              <div class="card-header">
-                <h3 class="card-title"><b>{% trans 'Parking information' %}</b></h3>
+      <div class="col-md-12">
+        <div class="card card-primary">
+          <div class="card-header">
+            <h3 class="card-title"><b>{% trans 'Parking information' %}</b></h3>
 
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
-                    <i class="fas fa-minus"></i></button>
-                </div>
-              </div>
-              <div class="card-body">
-                
-                  {% if form.errors %}
-                  <div class="fieldWrapper">
-                    <p><b>Errors</b></p>
-                    {{form.errors}}
-                  </div>
-                  {% endif %}
-
-                    <input type="hidden" name="hidden_id" value="{{form.instance.id}}" />
-
-                    <div id="canvas-editor" style="margin-right: auto;"></div>
-
-                    <div class="col-10" style="margin-top: 3%; margin-left: auto; margin-right: auto;">
-                  
-                    <button style="display: block ruby;"
-                      class="btn btn-success float-right"
-                      onclick="saveCanvas()">
-                      {% trans 'Save setup' %}
-                      </button>
-                   
-                    <table class="table table-striped">
-                          <tr  class="bg-info">
-                              <th>V1</th>
-                              <th>V2</th>
-                              <th>V3</th>
-                              <th>V4</th>
-                              <th>Shortname</th>
-                          </tr>
-                  
-                          <tbody id="myTable">
-                              
-                          </tbody>
-                      </table>
-                </div>                              
-              </div>
+            <div class="card-tools">
+              <button type="button" class="btn btn-tool" data-card-widget="collapse" data-toggle="tooltip" title="Collapse">
+                <i class="fas fa-minus"></i></button>
             </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
           </div>
-      
+          <div class="card-body">
+            
+              {% if form.errors %}
+              <div class="fieldWrapper">
+                <p><b>Errors</b></p>
+                {{form.errors}}
+              </div>
+              {% endif %}
+
+                <input type="hidden" name="hidden_id" value="{{form.instance.id}}" />
+
+                <div id="canvas-editor" style="margin-right: auto;"></div>
+                
+                
+
+                <div class="col-10" style="margin-top: 3%; margin-left: auto; margin-right: auto;">
+              
+                  <table id="spaces-table" class="table table-bordered table-hover">
+                    <thead>
+                      <tr>
+                          <th>V1</th>
+                          <th>V2</th>
+                          <th>V3</th>
+                          <th>V4</th>
+                          <th>Shortname</th>
+                      </tr>
+                    </thead>
+              
+                      <tbody id="myTable">
+                          
+                      </tbody>
+                  </table>
+
+                  <div style="display: grid">
+                  <button style="display: block ruby;"
+                    class="btn btn-success float-right"
+                    onclick="saveCanvas()">
+                    {% trans 'Save setup' %}
+                  </button>
+                  </div>    
+                </div>  
+                                        
+          </div>
         </div>
+          <!-- /.card-body -->
+      </div>
+
+      
+       
     </form>
     </section>
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
 
+{% endblock %}
+
+{% block extra_js %}
 {% comment %} https://phpsolved.com/drawerjs-unofficial-documentation/ {% endcomment %}
-        <script src="/static/drawerJs/dist/jquery-3.4.1.min.js"></script>
-        <script src="/static/drawerJs/dist/drawerJs.standalone.js"></script>
-        <script src="/static/drawerJs/drawerLocalization.js"></script>
-        <script src="/static/drawerJs/drawerJsConfig.js"></script>
-        <script>
-            var csrftoken = '{{ csrf_token }}';
-            var vertex;
-        </script>
-        <script>
+<script src="/static/drawerJs/dist/jquery-3.4.1.min.js"></script>
+<script src="/static/drawerJs/dist/drawerJs.standalone.js"></script>
+<script src="/static/drawerJs/drawerLocalization.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jq-3.6.0/dt-1.11.3/r-2.2.9/sl-1.3.3/datatables.min.js"></script>
+<script>
+    var csrftoken = '{{ csrf_token }}';
+    var vertex;
+</script>
+<script>
 
-            var drawer = null;
-            var canvasWidth = $(document).width()*0.75;
-            var canvasHeight = $(document).height()*0.75;
-            var difX = 1280 / canvasWidth;
-            var difY = 720 / canvasHeight;
+  var drawer = null;
+  var canvasWidth = $(document).width()*0.75;
+  var canvasHeight = $(document).height()*0.75;
+  var difX = 1280 / canvasWidth;
+  var difY = 720 / canvasHeight;
 
 
-            function buildTable(canvasId, canvasData) {
-                //console.log(canvasData);
-                var data = JSON.parse(canvasData)
-                if(data.backgroundImage){
+  function buildTable(canvasId, canvasData) {
+      //console.log(canvasData);
+      var data = JSON.parse(canvasData)
+      if(data.backgroundImage){
 
-                  var table = document.getElementById('myTable')
-                  table.innerHTML = "";
-                  vertex = []; //All spaces container
+        var table = document.getElementById('myTable')
+        table.innerHTML = "";
+        vertex = []; //All spaces container
 
-                  for (i in data.objects){
-                      var obj = data.objects[i];
-                      space = []; // All vertex of the space
+        for (i in data.objects){
+            var obj = data.objects[i];
+            space = []; // All vertex of the space
 
-                      if(obj.type == "segmentablePolygon"){
-                          var row = "<tr>"
-          
-                          var centerX = parseFloat(obj.left); //Absolute position of upper left vertex
-                          var centerY = parseFloat(obj.top);
-                          var scaleX = parseFloat(obj.scaleX);
-                          var scaleY = parseFloat(obj.scaleY);
-                          var sizeX = parseFloat(data.backgroundImage.width);
-                          var sizeY = parseFloat(data.backgroundImage.height);
+            if(obj.type == "segmentablePolygon" && obj.points[0].length == 4){
+                var row = "<tr>"
 
-                          // Setting stroke
-                          // obj.stroke = "#1f497d",
-                          // obj.strokeWidth = 5,
-                          // obj.strokeDashArray = [8,8]
+                var centerX = parseFloat(obj.left); //Absolute position of upper left vertex
+                var centerY = parseFloat(obj.top);
+                var scaleX = parseFloat(obj.scaleX);
+                var scaleY = parseFloat(obj.scaleY);
+                var sizeX = parseFloat(data.backgroundImage.width);
+                var sizeY = parseFloat(data.backgroundImage.height);
 
-                          //console.log(centerX/sizeX*1280, centerY/sizeY*720)
-                            for(j in obj.points[0]){
-                              point = obj.points[0][j];
+                // Setting stroke
+                // obj.stroke = "#1f497d",
+                // obj.strokeWidth = 5,
+                // obj.strokeDashArray = [8,8]
 
-                              /* Set centerXY to the actual center of the polygon
-                                    Translate upper left vertex to the center 
-                              */
-                              if(j==0){
-                                //console.log("CenterX: "+centerX + " ; CenterY: "+ centerY);
-                                //console.log("V1X: "+point.x + " ; V2Y: "+ point.y);
-                                
-                                centerX = centerX +  Math.abs(point.x);
-                                centerY = centerY +  Math.abs(point.y);
+                //console.log(centerX/sizeX*1280, centerY/sizeY*720)
+                  for(j in obj.points[0]){
+                    point = obj.points[0][j];
 
-                                //console.log("New CenterX: "+centerX / sizeX *1280 + " ; CenterY: "+ centerY / sizeY *720);
-                              }
-                              
-                                x = (parseFloat(point.x) + centerX)  / sizeX * 1280;
-                                y = (parseFloat(point.y) + centerY) / sizeY  * 720;          
+                    /* Set centerXY to the actual center of the polygon
+                          Translate upper left vertex to the center 
+                    */
+                    if(j==0){
+                      //console.log("CenterX: "+centerX + " ; CenterY: "+ centerY);
+                      //console.log("V1X: "+point.x + " ; V2Y: "+ point.y);
+                      
+                      centerX = centerX +  Math.abs(point.x);
+                      centerY = centerY +  Math.abs(point.y);
 
-                                row += "<td>["+ x.toFixed(2) + " , " + y.toFixed(2)+"]</td>";
-                                
-                                space[j] = [x,y] ;
-                            }
-                            row += "<td>A"+i+"</td>";
-                            row += "</tr>";
-                            table.innerHTML += row;
-                            vertex.push(space)
-                            //console.log(vertex); 
-                        }  
-                            
+                      //console.log("New CenterX: "+centerX / sizeX *1280 + " ; CenterY: "+ centerY / sizeY *720);
+                    }
+                    
+                      x = (parseFloat(point.x) + centerX)  / sizeX * 1280;
+                      y = (parseFloat(point.y) + centerY) / sizeY  * 720;          
+
+                      row += "<td>["+ x.toFixed(2) + " , " + y.toFixed(2)+"]</td>";
+                      
+                      space[j] = [x,y] ;
                   }
-                }
-              } //buildTable
+                  row += '<td> <input type="text" id="shortname-'+i+'" name="shortname-'+i+'" value="A'+i+'"></td>';
+                  row += "</tr>";
+                  table.innerHTML += row;
+                  vertex.push(space)
+                  //console.log(vertex); 
+              } 
+              else{ // Invalid polygon
+                delete data.objects[i];
+              } 
+                  
+        }
+      }
+    } //buildTable
 
-            var drawerPlugins = [
-                'BackgroundImage',
-                'Polygon',
-                'ShapeContextMenu',
-                'Zoom',
-                ];
+  var drawerPlugins = [
+      'BackgroundImage',
+      'Polygon',
+      'ShapeContextMenu',
+      'Zoom',
+      ];
 
-            $(document).ready(function () {
-                    drawer = new DrawerJs.Drawer(null, {
-                    texts: customLocalization,
-                    align: 'center',
-                    plugins: drawerPlugins,
-                    defaultImageUrl: '/static/drawerJS/play-button.png', // Click to start
-                    defaultActivePlugin : { name : 'Polygon', mode : 'lastUsed'},
-                    activeColor: 'rgba(0, 255, 255, 0.55)',
-                    pluginsConfig: {
-                        BackgroundImage: {
-                            scaleDownLargeImage: true,
-                            imagePosition: 'stretch',
-                            dynamicRepositionImage: true,
-                            dynamicRepositionImageThrottle: 100,
-                            fixedBackgroundUrl: '/static/drawerJS/parking_sample.jpg',
-                        },
-                        ShapeBorder: {
-                            color: '#F3060A',
-                            defaultBorder:  'Dashed bold'
-                        },
-                        Color: {
-                            colors: []
-                        }
-                    },
-                    contentConfig: {
-                        saveCanvasData:buildTable,                        
-                    },
-
-                }, canvasWidth, canvasHeight);
-                $('#canvas-editor').append(drawer.getHtml());
-
-                drawer.onInsert();
-                drawer.api.startEditing();
-
-                //Try to load existing canvas setup
-                let canvas = JSON.parse("{{canvas|escapejs}}"); 
-                //console.log(canvas);   
-                if(canvas != ''){
-                  drawer.loadCanvas(canvas);
-                }
-                drawer.syncCanvasData();
-  
-            });
-
-
-            function saveCanvas(){
-                //console.log(JSON.parse(localStorage.getItem('canvasData')));
-                data = {vertex : JSON.stringify(vertex), canvas: JSON.stringify(drawer.getCanvasData()), csrfmiddlewaretoken: '{{ csrf_token }}', id: '{{form.instance.id}}'};
-                //console.log(data);
-                post("", data);
-                //console.log("saveCanvas");
-            }
-
-          /** https://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit
-            * sends a request to the specified url from a form. this will change the window location.
-            * @param {string} path the path to send the post request to
-            * @param {object} params the parameters to add to the url
-            * @param {string} [method=post] the method to use on the form
-            */
-
-            function post(path, params, method='post') {
-
-              // The rest of this code assumes you are not using a library.
-              // It can be made less verbose if you use one.
-              const form = document.createElement('form');
-              form.method = method;
-              form.action = path;
-
-              for (const key in params) {
-                if (params.hasOwnProperty(key)) {
-                  const hiddenField = document.createElement('input');
-                  hiddenField.type = 'hidden';
-                  hiddenField.name = key;
-                  hiddenField.value = params[key];
-
-                  form.appendChild(hiddenField);
-                }
+  $(document).ready(function () {
+          drawer = new DrawerJs.Drawer(null, {
+          texts: customLocalization,
+          align: 'center',
+          plugins: drawerPlugins,
+          defaultImageUrl: '/static/drawerJS/play-button.png', // Click to start
+          defaultActivePlugin : { name : 'Polygon', mode : 'lastUsed'},
+          activeColor: 'rgba(0, 255, 255, 0.55)',
+          pluginsConfig: {
+              BackgroundImage: {
+                  scaleDownLargeImage: true,
+                  imagePosition: 'stretch',
+                  dynamicRepositionImage: true,
+                  dynamicRepositionImageThrottle: 100,
+                  fixedBackgroundUrl: '/static/drawerJS/parking_sample.jpg',
+              },
+              ShapeBorder: {
+                  color: '#F3060A',
+                  defaultBorder:  'Dashed bold'
+              },
+              Color: {
+                  colors: []
               }
+          },
+          contentConfig: {
+              saveCanvasData:buildTable,                        
+          },
 
-              document.body.appendChild(form);
-              form.submit();
-            }
+      }, canvasWidth, canvasHeight);
+      $('#canvas-editor').append(drawer.getHtml());
 
-    </script>
+      drawer.onInsert();
+      drawer.api.startEditing();
+
+      //Try to load existing canvas setup
+      let canvas = JSON.parse("{{canvas|escapejs}}"); 
+      //console.log(canvas);   
+      if(canvas != ''){
+        drawer.loadCanvas(canvas);
+      }
+      drawer.syncCanvasData();
+
+
+    // https://datatables.net/reference/option/
+    var table = $('#spaces-table').DataTable({
+        "order": [
+          [4, "asc"]],
+        "paging": false,
+        "searching": false,
+        "stateSave": false,
+        "orderClasses": true,
+        "autoWidth": true,
+        "pagingType": "numbers",
+        "columnDefs": [{
+          "targets": [4],
+           "width": "3rem",
+          "orderable": true,
+        }],
+        "select": true
+      });
+    
+
+    // OnClick table row
+    $('#spaces-table tbody').on( 'click', 'tr', function () {
+       
+    });
+
+  });
+
+
+
+
+  function saveCanvas(){
+      //console.log(JSON.parse(localStorage.getItem('canvasData')));
+      data = {vertex : JSON.stringify(vertex), canvas: JSON.stringify(drawer.getCanvasData()), csrfmiddlewaretoken: '{{ csrf_token }}', id: '{{form.instance.id}}'};
+      //console.log(data);
+      post("", data);
+      //console.log("saveCanvas");
+  }
+
+  /** https://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit
+  * sends a request to the specified url from a form. this will change the window location.
+  * @param {string} path the path to send the post request to
+  * @param {object} params the parameters to add to the url
+  * @param {string} [method=post] the method to use on the form
+  */
+
+  function post(path, params, method='post') {
+
+    // The rest of this code assumes you are not using a library.
+    // It can be made less verbose if you use one.
+    const form = document.createElement('form');
+    form.method = method;
+    form.action = path;
+
+    for (const key in params) {
+      if (params.hasOwnProperty(key)) {
+        const hiddenField = document.createElement('input');
+        hiddenField.type = 'hidden';
+        hiddenField.name = key;
+        hiddenField.value = params[key];
+
+        form.appendChild(hiddenField);
+      }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+</script>
 
 {% endblock %}
