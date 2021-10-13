@@ -15,6 +15,13 @@
   
         <form  method="post">
             {% csrf_token %}
+
+          {% if form.errors %}
+            <div class="fieldWrapper">
+              <p><b>Errors</b></p>
+              {{form.errors}}
+            </div>
+          {% endif %}
           <div class="input-group mb-3">
             <input type="text"name="username" maxlength="150" autofocus required id="id_username"
              class="form-control" placeholder="{% trans 'Username' %}">
