@@ -68,13 +68,14 @@
                         </li>
                     </ul>
                 </li>
-
+                {% if request.user.is_staff %}
                 <li class="nav-item">
                     <a href="/admin" class="nav-link{% if request.resolver_match.url_name == 'manage/settings' %}active{% endif %}">
                         <i class="nav-icon fas fa-cog"></i> 
-                        <p>{% trans 'Settings' %}</p>
+                        <p>{% trans 'Admin' %}</p>
                     </a>
                 </li>
+                {% endif %}
 
                 <li class="nav-item">
                     <a href="{% url 'logout'%}" class="nav-link">
