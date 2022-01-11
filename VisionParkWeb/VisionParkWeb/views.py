@@ -98,8 +98,15 @@ def add_parking(request, id=None):
             stock = form.save(commit=False)
             print("stock",stock)
             stock.user = request.user
-            # Prevent the canvas from being removed
-            stock.save(update_fields=['name', 'address', 'postcode', 'lon', 'lat', 'date_modified'])
+            
+            # Editing existing parking
+            if hidden_id is not None and hidden_id != 'None': 
+                # Prevent the canvas from being removed
+                stock.save(update_fields=['name', 'address', 'postcode', 'lon', 'lat', 'date_modified'])
+            # Creating new parking
+            else:
+                 stock.save()
+
 
             parkings = Parking.objects.filter(user=request.user)
             return redirect('/manage/myparkings', {'parkings' : parkings, 'added_ok': True})
