@@ -134,8 +134,8 @@ Setup
 <script>
 
   var drawer = null;
-  var canvasWidth = $(document).width()*0.75;
-  var canvasHeight = $(document).height()*0.75;
+  var canvasWidth = 1280;
+  var canvasHeight = 720;
   var difX = 1280 / canvasWidth;
   var difY = 720 / canvasHeight;
 
@@ -179,14 +179,14 @@ Setup
                       //console.log("CenterX: "+centerX + " ; CenterY: "+ centerY);
                       //console.log("V1X: "+point.x + " ; V2Y: "+ point.y);
                       
-                      centerX = centerX +  Math.abs(point.x);
-                      centerY = centerY +  Math.abs(point.y);
+                      centerX = centerX +  obj.width/2;
+                      centerY = centerY +  obj.height/2;
 
                       //console.log("New CenterX: "+centerX / sizeX *1280 + " ; CenterY: "+ centerY / sizeY *720);
                     }
                     
-                      x = (parseFloat(point.x) + centerX)  / sizeX * 1280;
-                      y = (parseFloat(point.y) + centerY) / sizeY  * 720;          
+                      x = (parseFloat(point.x) + centerX)  ;
+                      y = (parseFloat(point.y) + centerY) ;          
 
                       row += "<td>["+ x.toFixed(2) + " , " + y.toFixed(2)+"]</td>";
                       
@@ -227,7 +227,7 @@ Setup
                   imagePosition: 'stretch',
                   dynamicRepositionImage: true,
                   dynamicRepositionImageThrottle: 100,
-                  fixedBackgroundUrl: '/static/drawerJS/parking_sample.jpg',
+                  fixedBackgroundUrl: '/static/drawerJS/UFPR04_sample.jpg',
               },
               ShapeBorder: {
                   color: '#F3060A',
