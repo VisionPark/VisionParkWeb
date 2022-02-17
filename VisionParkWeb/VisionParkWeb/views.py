@@ -102,7 +102,7 @@ def add_parking(request, id=None):
             # Editing existing parking
             if hidden_id is not None and hidden_id != 'None': 
                 # Prevent the canvas from being removed
-                stock.save(update_fields=['name', 'address', 'postcode', 'lon', 'lat', 'date_modified'])
+                stock.save(update_fields=['name', 'address', 'postcode', 'lon', 'lat', 'date_modified', 'img'])
             # Creating new parking
             else:
                  stock.save()
@@ -172,12 +172,13 @@ def setup_parking(request, id=None):
             Space.objects.bulk_create(new_spaces)
 
             parkings = Parking.objects.filter(user=request.user)
+            parkingImg = parking.img
             return redirect('/manage/myparkings', {'parkings' : parkings, 'added_ok': True})
 
         # Creating new parking, redirect
         else:
             parkings = Parking.objects.filter(user=request.user)
-            return redirect('/manage/myparkings', {'parkings' : parkings, 'setup_ok': False})
+            return redirect('/manage/myparkings', {'parkings' : parkings, 'setup_ok': False, 'parkingImg': parkingImg})
 
     # First time entering the page
     else:
@@ -190,7 +191,8 @@ def setup_parking(request, id=None):
 
             # spaces = get_list_or_404(Space, parking=parking)      
             canvas = parking.canvas
-            return render(request, "manage/setup.html", {'canvas' : canvas})
+            parkingImg = parking.img
+            return render(request, "manage/setup.html", {'canvas' : canvas, 'parkingImg': parkingImg})
 
         # Creating new parking
         else:
