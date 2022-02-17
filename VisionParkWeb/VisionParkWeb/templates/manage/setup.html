@@ -100,7 +100,7 @@ Setup
                   <div style="display: grid">
                   <button style="display: block ruby;"
                     class="btn btn-success float-right"
-                    onclick="saveCanvas()">
+                    onclick="postCanvas()">
                     {% trans 'Save setup' %}
                   </button>
                   </div>    
@@ -139,6 +139,14 @@ Setup
   var difX = 1280 / canvasWidth;
   var difY = 720 / canvasHeight;
 
+  var _canvasId = null;
+  var _canvasData= null;
+
+  function saveCanvas(canvasId, canvasData)
+  {
+    _canvasId = canvasId;
+    _canvasData = canvasData;
+  }
 
   function buildTable(canvasId, canvasData) {
       //console.log(canvasData);
@@ -213,6 +221,8 @@ Setup
       'Zoom',
       ];
 
+  
+
   $(document).ready(function () {
           drawer = new DrawerJs.Drawer(null, {
           texts: customLocalization,
@@ -226,7 +236,7 @@ Setup
                   imagePosition: 'stretch',
                   dynamicRepositionImage: true,
                   dynamicRepositionImageThrottle: 100,
-                  fixedBackgroundUrl: '/static/drawerJS/UFPR04_sample.jpg',
+                  fixedBackgroundUrl: '/static/parkingImg/{{parkingImg}}.jpg',
               },
               ShapeBorder: {
                   color: '#F3060A',
@@ -236,8 +246,8 @@ Setup
                   colors: []
               }
           },
-          contentConfig: {
-              saveCanvasData:buildTable,                        
+           contentConfig: {
+              saveCanvasData:saveCanvas,                        
           },
 
       }, canvasWidth, canvasHeight);
@@ -250,6 +260,7 @@ Setup
       let canvas = JSON.parse("{{canvas|escapejs}}"); 
       //console.log(canvas);   
       if(canvas != ''){
+        //TODO: loading
         drawer.loadCanvas(canvas);
       }
       drawer.syncCanvasData();
@@ -284,8 +295,9 @@ Setup
 
 
 
-  function saveCanvas(){
+  function postCanvas(){
       //console.log(JSON.parse(localStorage.getItem('canvasData')));
+      buildTable(_canvasId, _canvasData);
       data = {vertex : JSON.stringify(vertex), canvas: JSON.stringify(drawer.getCanvasData()), csrfmiddlewaretoken: '{{ csrf_token }}', id: '{{form.instance.id}}'};
       //console.log(data);
       post("", data);
