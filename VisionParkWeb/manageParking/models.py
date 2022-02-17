@@ -17,6 +17,13 @@ class Parking(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
     canvas = models.JSONField(blank=True, null=True)
+    
+    parkingImgs = (
+        ('PUCPR', 'PUCPR'),
+        ('UFPR04', 'UFPR04'),
+        ('UFPR05', 'UFPR05'),
+    )
+    img =  models.CharField(choices=parkingImgs, max_length=10)
 
     # Calculated fields
     @property
