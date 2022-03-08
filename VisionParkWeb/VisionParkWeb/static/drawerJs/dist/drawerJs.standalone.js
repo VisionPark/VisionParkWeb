@@ -14517,25 +14517,25 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       }
       this._setLineDash(ctx, this.cornerDashArray, null);
 
-      // top-left
-      this._drawControl('tl', ctx, methodName,
-        left,
-        top);
+      // // top-left
+      // this._drawControl('tl', ctx, methodName,
+      //   left,
+      //   top);
 
-      // top-right
-      this._drawControl('tr', ctx, methodName,
-        left + width,
-        top);
+      // // top-right
+      // this._drawControl('tr', ctx, methodName,
+      //   left + width,
+      //   top);
 
-      // bottom-left
-      this._drawControl('bl', ctx, methodName,
-        left,
-        top + height);
+      // // bottom-left
+      // this._drawControl('bl', ctx, methodName,
+      //   left,
+      //   top + height);
 
-      // bottom-right
-      this._drawControl('br', ctx, methodName,
-        left + width,
-        top + height);
+      // // bottom-right
+      // this._drawControl('br', ctx, methodName,
+      //   left + width,
+      //   top + height);
 
       // if (!this.get('lockUniScaling')) {
 
