@@ -10636,32 +10636,32 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
           target = transform.target,
           action = transform.action,
           actionPerformed = false;
-
-      if (action === 'rotate') {
-        (actionPerformed = this._rotateObject(x, y)) && this._fire('rotating', target, e);
-      }
-      else if (action === 'scale') {
-        (actionPerformed = this._onScale(e, transform, x, y)) && this._fire('scaling', target, e);
-      }
-      else if (action === 'scaleX') {
-        (actionPerformed = this._scaleObject(x, y, 'x')) && this._fire('scaling', target, e);
-      }
-      else if (action === 'scaleY') {
-        (actionPerformed = this._scaleObject(x, y, 'y')) && this._fire('scaling', target, e);
-      }
-      else if (action === 'skewX') {
-        (actionPerformed = this._skewObject(x, y, 'x')) && this._fire('skewing', target, e);
-      }
-      else if (action === 'skewY') {
-        (actionPerformed = this._skewObject(x, y, 'y')) && this._fire('skewing', target, e);
-      }
-      else {
+      // ONLY ALLOWING MOVING ACTIONS
+      // if (action === 'rotate') {
+      //   (actionPerformed = this._rotateObject(x, y)) && this._fire('rotating', target, e);
+      // }
+      // else if (action === 'scale') {
+      //   (actionPerformed = this._onScale(e, transform, x, y)) && this._fire('scaling', target, e);
+      // }
+      // else if (action === 'scaleX') {
+      //   (actionPerformed = this._scaleObject(x, y, 'x')) && this._fire('scaling', target, e);
+      // }
+      // else if (action === 'scaleY') {
+      //   (actionPerformed = this._scaleObject(x, y, 'y')) && this._fire('scaling', target, e);
+      // }
+      // else if (action === 'skewX') {
+      //   (actionPerformed = this._skewObject(x, y, 'x')) && this._fire('skewing', target, e);
+      // }
+      // else if (action === 'skewY') {
+      //   (actionPerformed = this._skewObject(x, y, 'y')) && this._fire('skewing', target, e);
+      // }
+      // else {
         actionPerformed = this._translateObject(x, y);
         if (actionPerformed) {
           this._fire('moving', target, e);
           this.setCursor(target.moveCursor || this.moveCursor);
         }
-      }
+      // }
       transform.actionPerformed = actionPerformed;
     },
 
