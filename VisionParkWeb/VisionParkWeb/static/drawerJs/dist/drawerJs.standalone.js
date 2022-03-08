@@ -10743,7 +10743,7 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
           this.setCursor(hoverCursor);
         }
         else {
-          this._setCornerCursor(corner, target, e);
+          // this._setCornerCursor(corner, target, e);
         }
       }
       //actually unclear why it should return something
@@ -11818,7 +11818,7 @@ fabric.util.object.extend(fabric.StaticCanvas.prototype, /** @lends fabric.Stati
      * @since 1.6.2
      * @type String
      */
-    cornerStyle:          'rect',
+    cornerStyle:          'circle',
 
     /**
      * Array specifying dash pattern of an object's control (hasBorder must be true)
@@ -14537,35 +14537,35 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
         left + width,
         top + height);
 
-      if (!this.get('lockUniScaling')) {
+      // if (!this.get('lockUniScaling')) {
 
-        // middle-top
-        this._drawControl('mt', ctx, methodName,
-          left + width / 2,
-          top);
+      //   // middle-top
+      //   this._drawControl('mt', ctx, methodName,
+      //     left + width / 2,
+      //     top);
 
-        // middle-bottom
-        this._drawControl('mb', ctx, methodName,
-          left + width / 2,
-          top + height);
+      //   // middle-bottom
+      //   this._drawControl('mb', ctx, methodName,
+      //     left + width / 2,
+      //     top + height);
 
-        // middle-right
-        this._drawControl('mr', ctx, methodName,
-          left + width,
-          top + height / 2);
+      //   // middle-right
+      //   this._drawControl('mr', ctx, methodName,
+      //     left + width,
+      //     top + height / 2);
 
-        // middle-left
-        this._drawControl('ml', ctx, methodName,
-          left,
-          top + height / 2);
-      }
+      //   // middle-left
+      //   this._drawControl('ml', ctx, methodName,
+      //     left,
+      //     top + height / 2);
+      // }
 
-      // middle-top-rotate
-      if (this.hasRotatingPoint) {
-        this._drawControl('mtr', ctx, methodName,
-          left + width / 2,
-          top - this.rotatingPointOffset);
-      }
+      // // middle-top-rotate
+      // if (this.hasRotatingPoint) {
+      //   this._drawControl('mtr', ctx, methodName,
+      //     left + width / 2,
+      //     top - this.rotatingPointOffset);
+      // }
 
       ctx.restore();
 
