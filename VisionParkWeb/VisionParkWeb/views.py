@@ -51,7 +51,7 @@ def parkings(request):
     # First time or Close card button pressed
     # All parkings stats
     all_parkings = Parking.objects.all()
-    num_spaces = len(all_parkings)
+    num_spaces = 0
     num_spaces_vacant = 0
     num_spaces_not_vacant = 0
     num_spaces_unknown = 0
@@ -61,10 +61,13 @@ def parkings(request):
         num_spaces_not_vacant += p.num_spaces_not_vacant
         num_spaces_unknown += p.num_spaces_unknown
 
+    num_spaces = num_spaces_vacant + num_spaces_not_vacant 
+    per_occupied  =round(num_spaces_not_vacant/num_spaces *100)
+
     return render(request, 'parkings.html', 
         {'parkings': parkings, 'parkingsJson': parkingsJson,
             'num_spaces':num_spaces, 'num_spaces_vacant':num_spaces_vacant,
-            'num_spaces_not_vacant':num_spaces_not_vacant, 'num_spaces_unknown':num_spaces_unknown})
+            'num_spaces_not_vacant':num_spaces_not_vacant, 'num_spaces_unknown':num_spaces_unknown, 'per_occupied':per_occupied})
 
 @login_required
 def add_parking(request, id=None):
