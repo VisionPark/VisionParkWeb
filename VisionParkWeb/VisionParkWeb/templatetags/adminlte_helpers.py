@@ -3,7 +3,7 @@ from hashlib import md5
 from django import template
 from django.conf import settings
 from django.urls import reverse
-
+from django.contrib.auth.models import Group
 from VisionParkWeb.compat import is_authenticated
 
 register = template.Library()
@@ -20,7 +20,8 @@ def avatar_url(context, size=None, user=None):
     user = context['request'].user if user is None else user
     # return "/static/admin-lte/dist/img/user3-128x128.jpg"
     return 'https://www.gravatar.com/avatar/{hash}?s={size}&d=mm'.format(
-        hash=md5(user.email.encode('utf-8')).hexdigest() if is_authenticated(user) else '',
+        hash=md5(user.email.encode('utf-8')
+                 ).hexdigest() if is_authenticated(user) else '',
         size=size or '',
     )
 
@@ -43,3 +44,9 @@ def add_active(context, url_name, *args, **kwargs):
         return ' active '
     else:
         return ''
+
+
+@register.filter(name='has_group')
+def has_group(user, group_name):
+    group = Group.objects.get(name=group_name)
+    return True if group in user.groups.all() else False

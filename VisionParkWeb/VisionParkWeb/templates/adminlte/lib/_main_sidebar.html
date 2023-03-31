@@ -48,26 +48,28 @@
                         <p>{% trans 'Home' %}</p>
                     </a>
                 </li>
-                
-                <li class="nav-item has-tree-view {% if 'manage' in request.path %} menu-open {% endif %}">
-                    <a href="#" class="nav-link{% if 'manage' in request.path %} active{% endif %}">
-                        <i class="nav-icon fas fa-object-group"></i> <p>{% trans 'Manage Parkings' %}</p>
-                        <p><i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview ">
-                        <li class="nav-item">
-                                <a href="/manage/add" class="nav-link{% if request.path == '/manage/add' %} active{% endif %}">
-                                    <i class="nav-icon fas fa-plus"></i> {% trans 'Add new' %}
+                {% if request.user|has_group:'ParkingAdmin' %}
+                    <li class="nav-item has-tree-view {% if 'manage' in request.path %} menu-open {% endif %}">
+                        <a href="#" class="nav-link{% if 'manage' in request.path %} active{% endif %}">
+                            <i class="nav-icon fas fa-object-group"></i> <p>{% trans 'Manage Parkings' %}</p>
+                            <p><i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview ">
+                            <li class="nav-item">
+                                    <a href="/manage/add" class="nav-link{% if request.path == '/manage/add' %} active{% endif %}">
+                                        <i class="nav-icon fas fa-plus"></i> {% trans 'Add new' %}
+                                    </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/manage/myparkings" class="nav-link{% if request.path == '/manage/myparkings' %} active{% endif %}">
+                                    <i class="nav-icon fas fa-user"></i> {% trans 'My Parkings' %}
                                 </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="/manage/myparkings" class="nav-link{% if request.path == '/manage/myparkings' %} active{% endif %}">
-                                <i class="nav-icon fas fa-user"></i> {% trans 'My Parkings' %}
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                            </li>
+                        </ul>
+                    </li>
+                {% endif %}
+
                 {% if request.user.is_staff %}
                 <li class="nav-item">
                     <a href="/admin" class="nav-link{% if request.resolver_match.url_name == 'manage/settings' %}active{% endif %}">
